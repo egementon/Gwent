@@ -86,11 +86,12 @@ void AGW_PlayerController::StopDrag()
             }
         }
 
-        if (Distance < 500.f)
-        {
-            //DraggedCard->SetActorLocation(RowArray[ClosestRowIndex]->GetActorLocation());
-            DraggedCard->SetNewOwnerRow(RowArray[ClosestRowIndex]);
-        }
+        // if (Distance < 500.f)
+        // {
+        //     DraggedCard->SetNewOwnerRow(RowArray[ClosestRowIndex]);
+        // }
+
+        DraggedCard->SetNewOwnerRow(RowArray[ClosestRowIndex]);
         
         DraggedCard = nullptr;
     }

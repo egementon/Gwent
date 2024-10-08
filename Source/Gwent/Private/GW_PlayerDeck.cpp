@@ -1,40 +1,34 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Gwent/Public/GW_Row.h"
+#include "GW_PlayerDeck.h"
 
 #include "Card/GW_CardBase.h"
 #include "Components/BoxComponent.h"
-#include "Components/TextRenderComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
-// Sets default values
-AGW_Row::AGW_Row()
+AGW_PlayerDeck::AGW_PlayerDeck()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
 	RowBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RowBoxComponent"));
 	RowBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	TotalPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
-	TotalPowerText->SetupAttachment(RowBoxComponent);
 }
 
-void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
+void AGW_PlayerDeck::AddToCardsArray(AGW_CardBase* AddedCard)
 {
 	SnappedCardsArray.AddUnique(AddedCard);
 	UpdateCardsLocations();
-	CalculateTotalPower();
 }
 
-void AGW_Row::RemoveFromCardsArray(AGW_CardBase* RemovedCard)
+void AGW_PlayerDeck::RemoveFromCardsArray(AGW_CardBase* RemovedCard)
 {
 	SnappedCardsArray.Remove(RemovedCard);
 	UpdateCardsLocations();
-	CalculateTotalPower();
 }
 
-void AGW_Row::UpdateCardsLocations()
+void AGW_PlayerDeck::UpdateCardsLocations()
 {
 	int32 NumCards = SnappedCardsArray.Num();
 	if (NumCards < 1) return;
@@ -57,21 +51,22 @@ void AGW_Row::UpdateCardsLocations()
 	}
 }
 
-void AGW_Row::CalculateTotalPower()
+void AGW_PlayerDeck::GenerateRandomCards()
 {
-	TotalPower = 0;
-	if (!SnappedCardsArray.IsEmpty())
+	for (int i = 0; i < 10; ++i)
 	{
-		for (AGW_CardBase* Card : SnappedCardsArray)
-		{
-			TotalPower += Card->CardPower;
-		}
+		auto Card = GetWorld()->SpawnActorDeferred<AGW_CardBase>(CardClass, FTransform::Identity);
+		Card->CardPower = UKismetMathLibrary::RandomInteger(11);
+		//Card->bIsSnapped = true;
+		SnappedCardsArray.AddUnique(Card);
 	}
 
-	TotalPowerText->SetText(FText::AsNumber(TotalPower));
+	UpdateCardsLocations();
 }
 
-void AGW_Row::BeginPlay()
+void AGW_PlayerDeck::BeginPlay()
 {
+	GenerateRandomCards();
 }
+
 

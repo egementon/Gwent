@@ -59,8 +59,6 @@ void AGW_CardBase::DetachFromOwnerRow()
 	bIsSnapped = false;
 }
 
-
-
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
