@@ -57,6 +57,7 @@ void AGW_Row::UpdateCardsLocations()
 			SnappedCardsArray[i]->SetActorLocation(NewPosition);
 		}
 	}
+	//git test
 }
 
 void AGW_Row::CalculateTotalPower()
