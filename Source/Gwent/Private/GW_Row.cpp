@@ -16,22 +16,25 @@ AGW_Row::AGW_Row()
 	RowBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RowBoxComponent"));
 	RowBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	TotalPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
-	TotalPowerText->SetupAttachment(RowBoxComponent);
+	if (!bIsPlayerDeck)
+	{
+		TotalPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
+		TotalPowerText->SetupAttachment(RowBoxComponent);
+	}
 }
 
 void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
 {
 	SnappedCardsArray.AddUnique(AddedCard);
 	UpdateCardsLocations();
-	CalculateTotalPower();
+	if (!bIsPlayerDeck) CalculateTotalPower();
 }
 
 void AGW_Row::RemoveFromCardsArray(AGW_CardBase* RemovedCard)
 {
 	SnappedCardsArray.Remove(RemovedCard);
 	UpdateCardsLocations();
-	CalculateTotalPower();
+	if (!bIsPlayerDeck) CalculateTotalPower();
 }
 
 void AGW_Row::UpdateCardsLocations()

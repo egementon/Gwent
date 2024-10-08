@@ -20,6 +20,7 @@ public:
 	AGW_PlayerController();
 
 	// The card currently being dragged
+	UPROPERTY()
 	AGW_CardBase* DraggedCard;
 
 	// Start dragging a card

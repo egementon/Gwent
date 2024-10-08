@@ -21,6 +21,8 @@ public:
 	void AddToCardsArray(AGW_CardBase* AddedCard);
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
 
+	bool bIsPlayerDeck = false;
+
 protected:
 	virtual void BeginPlay() override;
 

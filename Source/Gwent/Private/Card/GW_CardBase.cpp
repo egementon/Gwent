@@ -27,24 +27,6 @@ void AGW_CardBase::BeginPlay()
 
 }
 
-
-// void AGW_CardBase::UpdateCardLocation(const FVector& NewLocation)
-// {
-// 	SetActorLocation(NewLocation);
-// }
-
-// void AGW_CardBase::SetMouseCollision(bool bIsActive)
-// {
-// 	if (bIsActive)
-// 	{
-// 		CardMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Block);
-// 	}
-// 	else
-// 	{
-// 		CardMesh->SetCollisionResponseToChannel(ECC_Visibility, ECR_Ignore);
-// 	}
-// }
-
 void AGW_CardBase::SetNewOwnerRow(AGW_Row* NewOwner)
 {
 	NewOwner->AddToCardsArray(this);
