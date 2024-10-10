@@ -22,8 +22,9 @@ public:
 	// void SetMouseCollision(bool bIsActive);
 
 	// Row Functions
-	void SetNewOwnerRow(AGW_Row* NewOwner);
+	void SetOwnerRow(AGW_Row* NewOwner);
 	void DetachFromOwnerRow();
+	void SetOwnerRowAsPlayerDeck();
 
 	bool bIsSnapped;
 

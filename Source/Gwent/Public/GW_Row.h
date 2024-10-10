@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_Row.generated.h"
 
+enum class ECardRowType : uint8;
 class UTextRenderComponent;
 class AGW_CardBase;
 class UBoxComponent;
@@ -22,6 +23,9 @@ public:
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
 
 	bool bIsPlayerDeck = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECardRowType RowType;
 
 protected:
 	virtual void BeginPlay() override;

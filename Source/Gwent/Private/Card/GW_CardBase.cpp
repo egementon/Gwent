@@ -3,6 +3,7 @@
 
 #include "Gwent/Public/Card/GW_CardBase.h"
 
+#include "GW_GameMode.h"
 #include "GW_Row.h"
 #include "Components/TextRenderComponent.h"
 
@@ -40,7 +41,7 @@ void AGW_CardBase::BeginPlay()
 	CardPowerText->SetText(FText::AsNumber(CardPower));
 }
 
-void AGW_CardBase::SetNewOwnerRow(AGW_Row* NewOwner)
+void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner)
 {
 	NewOwner->AddToCardsArray(this);
 	OwnerRow = NewOwner;
@@ -52,6 +53,12 @@ void AGW_CardBase::DetachFromOwnerRow()
 	OwnerRow->RemoveFromCardsArray(this);
 	OwnerRow = nullptr;
 	bIsSnapped = false;
+}
+
+void AGW_CardBase::SetOwnerRowAsPlayerDeck()
+{
+	AGW_Row* PlayerDeck = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerDeck;
+	SetOwnerRow(PlayerDeck);
 }
 
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

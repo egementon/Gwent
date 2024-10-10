@@ -3,6 +3,7 @@
 
 #include "Gwent/Public/GW_PlayerController.h"
 
+#include "GW_GameMode.h"
 #include "Camera/CameraActor.h"
 #include "Gwent/Public/GW_Row.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
@@ -37,14 +38,8 @@ void AGW_PlayerController::BeginPlay()
             PlayerController->SetViewTarget(CameraActor);
         }
     }
-    
-    // Initialize RowArray
-    TArray<AActor*> Actors;
-    UGameplayStatics::GetAllActorsOfClass(this, AGW_Row::StaticClass(), Actors);
-    for (AActor* Actor : Actors)
-    {
-        RowArray.AddUnique(Cast<AGW_Row>(Actor));
-    }
+
+    RowArray = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArray;
 }
 
 void AGW_PlayerController::Tick(float DeltaSeconds)
@@ -67,8 +62,8 @@ void AGW_PlayerController::StartDrag()
 
 void AGW_PlayerController::StopDrag()
 {
-    // TODO: It Should work with Collisions not distance, because rows are rectangle not uniform
-    // Snap the card to the nearest row when dropping
+    // TODO: It should work with Collisions not distance, because rows are rectangle not uniform like sphere
+    // Snap the card to the nearest row (which is not PlayerDeck) when dropping
     if (DraggedCard)
     {
         FVector CardLocation = DraggedCard->GetActorLocation();
@@ -76,21 +71,30 @@ void AGW_PlayerController::StopDrag()
         float Distance = MAX_FLT;
         int32 ClosestRowIndex = 0;
 
+        bool bFoundValidRow = false;
+
         for (int32 i = 0; i < RowArray.Num(); i++)
         {
-            float NewDistance = FVector::Dist2D(CardLocation, RowArray[i]->GetActorLocation());
-            if (NewDistance < Distance && !RowArray[i]->bIsPlayerDeck)
+            if (!RowArray[i]->bIsPlayerDeck && DraggedCard->CardRowType == RowArray[i]->RowType)
             {
-                Distance = NewDistance;
-                ClosestRowIndex = i;
+                float NewDistance = FVector::Dist2D(CardLocation, RowArray[i]->GetActorLocation());
+                if (NewDistance < Distance && NewDistance < 300.f) // should be closer than 300 units to snap
+                {
+                    Distance = NewDistance;
+                    ClosestRowIndex = i;
+                    bFoundValidRow = true;
+                }
             }
         }
-        // if (Distance < 500.f)
-        // {
-        //     DraggedCard->SetNewOwnerRow(RowArray[ClosestRowIndex]);
-        // }
-        DraggedCard->SetNewOwnerRow(RowArray[ClosestRowIndex]);
-        
+
+        if (bFoundValidRow)
+        {
+            DraggedCard->SetOwnerRow(RowArray[ClosestRowIndex]);
+        }
+        else
+        {
+            DraggedCard->SetOwnerRowAsPlayerDeck();
+        }
         DraggedCard = nullptr;
     }
 }

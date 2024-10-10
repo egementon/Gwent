@@ -3,6 +3,7 @@
 
 #include "GW_PlayerDeck.h"
 
+#include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
 #include "Components/TextRenderComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -33,7 +34,7 @@ void AGW_PlayerDeck::GenerateRandomCards()
 		// Spawn the card
 		auto Card = GetWorld()->SpawnActorDeferred<AGW_CardBase>(CardClass, FTransform::Identity);
 		Card->InitializeCardData(SelectedCardData);
-		Card->SetNewOwnerRow(this);
+		Card->SetOwnerRow(this);
 		Card->FinishSpawning(FTransform::Identity);
 		SnappedCardsArray.AddUnique(Card);
 	}
