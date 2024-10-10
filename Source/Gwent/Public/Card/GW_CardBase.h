@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Data/GW_CardDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "GW_CardBase.generated.h"
 
@@ -26,9 +27,26 @@ public:
 
 	bool bIsSnapped;
 
-	// Card Stats
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 CardPower = 1;
+	void InitializeCardData(FCardData NewCardData);
+	
+	// Card Data
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	FName CardName;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	int32 CardPower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	ECardRowType CardRowType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	ECardAbility CardAbility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UTexture2D* CardIcon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	UMaterial* ColorMaterial;
 	
 protected:
 	virtual void BeginPlay() override;

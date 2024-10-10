@@ -19,12 +19,25 @@ AGW_CardBase::AGW_CardBase()
 	CardPowerText->SetText(FText::AsNumber(CardPower));
 }
 
+void AGW_CardBase::InitializeCardData(FCardData NewCardData)
+{
+	CardName = NewCardData.Name;
+	CardPower = NewCardData.Power;
+	CardRowType = NewCardData.RowType;
+	CardAbility = NewCardData.Ability;
+	CardIcon = NewCardData.Icon;
+	ColorMaterial = NewCardData.ColorMaterial;
+}
+
 void AGW_CardBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (ColorMaterial)
+	{
+		CardMesh->SetMaterial(0, ColorMaterial);
+	}
 	CardPowerText->SetText(FText::AsNumber(CardPower));
-
 }
 
 void AGW_CardBase::SetNewOwnerRow(AGW_Row* NewOwner)

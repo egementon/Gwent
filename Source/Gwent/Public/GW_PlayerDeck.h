@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_PlayerDeck.generated.h"
 
+class UGW_CardDataAsset;
 class AGW_CardBase;
 class UBoxComponent;
 
@@ -25,5 +26,9 @@ protected:
 	TSubclassOf<AGW_CardBase> CardClass; 
 	
 	void GenerateRandomCards();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Data")
+	UGW_CardDataAsset* CardDataAsset;
+
 	
 };
