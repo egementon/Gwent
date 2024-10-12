@@ -8,6 +8,7 @@
 #include "Ability/Core/GW_AbilityBase.h"
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 // Sets default values
@@ -20,7 +21,6 @@ AGW_CardBase::AGW_CardBase()
 	CardPowerText->SetupAttachment(CardMesh);
 	
 	SetCardPower(CardPower);
-	BaseCardPower = CardPower;
 }
 
 AGW_Row* AGW_CardBase::GetOwnerRow()
@@ -45,6 +45,11 @@ void AGW_CardBase::SetCardPower(int32 NewCardPower)
 	CardPowerText->SetTextRenderColor(PowerColor);
 }
 
+int32 AGW_CardBase::GetBaseCardPower()
+{
+	return BaseCardPower;
+}
+
 void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 {
 	CardName = NewCardData.Name;
@@ -63,7 +68,9 @@ void AGW_CardBase::BeginPlay()
 	{
 		CardMesh->SetMaterial(0, ColorMaterial);
 	}
-	CardPowerText->SetText(FText::AsNumber(CardPower));
+	
+	BaseCardPower = CardPower;
+	SetCardPower(CardPower);
 }
 
 void AGW_CardBase::CanActivateAbility()

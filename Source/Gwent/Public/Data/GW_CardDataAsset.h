@@ -30,22 +30,22 @@ struct FCardData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	FName Name;
+	FName Name = NAME_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	int32 Power;
+	int32 Power = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	ECardRowType RowType;
+	ECardRowType RowType = ECardRowType::Melee;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	ECardAbility Ability;
+	ECardAbility Ability = ECardAbility::NoAbility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	UTexture2D* Icon;
+	UTexture2D* Icon = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	UMaterial* ColorMaterial;
+	UMaterial* ColorMaterial = nullptr;
 };
 
 

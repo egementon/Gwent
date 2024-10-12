@@ -17,4 +17,6 @@ void UGW_Ability_MoraleBoost::ActivateAbility(AGW_CardBase* Card)
 			RowCard->SetCardPower(RowCard->GetCardPower() + 1);
 		}
 	}
+
+	Card->GetOwnerRow()->CalculateTotalPower();
 }

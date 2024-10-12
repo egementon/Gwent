@@ -23,6 +23,7 @@ public:
 	
 	void AddToCardsArray(AGW_CardBase* AddedCard);
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
+	void CalculateTotalPower();
 
 	bool bIsPlayerDeck = false;
 
@@ -42,8 +43,6 @@ protected:
 	TArray<AGW_CardBase*> SnappedCardsArray;
 
 	void UpdateCardsLocations();
-
-	void CalculateTotalPower();
 	
 	int32 TotalPower;
 	

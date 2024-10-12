@@ -21,6 +21,7 @@ public:
 	AGW_Row* GetOwnerRow();
 	int32 GetCardPower();
 	void SetCardPower(int32 NewCardPower);
+	int32 GetBaseCardPower();
 
 	// Row Functions
 	void SetOwnerRow(AGW_Row* NewOwner);
