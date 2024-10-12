@@ -48,7 +48,7 @@ void AGW_Row::UpdateCardsLocations()
 	int32 NumCards = SnappedCardsArray.Num();
 	if (NumCards < 1) return;
 
-	float CardSpacing = 80.f;
+	float CardSpacing = 107.f;
 	FVector RowCenter = GetActorLocation();
 	
 	// Calculate starting position (center minus half of the total width of all cards)

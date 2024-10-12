@@ -43,10 +43,8 @@ struct FCardData
 	ECardAbility Ability = ECardAbility::NoAbility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	UTexture2D* Icon = nullptr;
+	UTexture2D* Image = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	UMaterial* ColorMaterial = nullptr;
 };
 
 

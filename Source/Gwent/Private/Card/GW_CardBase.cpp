@@ -56,17 +56,17 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 	CardPower = NewCardData.Power;
 	CardRowType = NewCardData.RowType;
 	CardAbility = NewCardData.Ability;
-	CardIcon = NewCardData.Icon;
-	ColorMaterial = NewCardData.ColorMaterial;
+	CardImage = NewCardData.Image;
 }
 
 void AGW_CardBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (ColorMaterial)
+	if (UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(CardMesh->GetMaterial(0), this))
 	{
-		CardMesh->SetMaterial(0, ColorMaterial);
+		DynamicMaterial->SetTextureParameterValue(FName("CardTexture"), CardImage);
+		CardMesh->SetMaterial(0, DynamicMaterial);
 	}
 	
 	BaseCardPower = CardPower;

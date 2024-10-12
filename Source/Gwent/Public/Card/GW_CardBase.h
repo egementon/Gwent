@@ -46,10 +46,7 @@ public:
 	ECardAbility CardAbility;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
-	UTexture2D* CardIcon;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
-	UMaterial* ColorMaterial;
+	UTexture2D* CardImage;
 	
 	int32 BaseCardPower;
 	
