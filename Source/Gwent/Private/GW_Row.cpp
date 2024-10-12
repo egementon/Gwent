@@ -3,6 +3,7 @@
 
 #include "Gwent/Public/GW_Row.h"
 
+#include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -76,5 +77,14 @@ void AGW_Row::CalculateTotalPower()
 
 void AGW_Row::BeginPlay()
 {
+	// add self reference to GameMode
+	if (!bIsPlayerDeck)
+	{
+		Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArray.AddUnique(this);
+	}
+	else
+	{
+		Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerDeck = this;
+	}
 }
 

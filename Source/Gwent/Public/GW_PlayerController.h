@@ -30,6 +30,8 @@ public:
 	void StopDrag();
 
 	// Update the card's position while dragging
+	void StartUpdateDrag();
+	void StopUpdateDrag();
 	void UpdateDrag();
 
 protected:
@@ -37,8 +39,12 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-
+	
 	TArray<AGW_Row*> RowArray;
+
+	// every frame timer for updating the card's position while dragging
+	FTimerHandle UpdateDragTimerHandle;
+
 
 
 private:

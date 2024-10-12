@@ -44,10 +44,6 @@ void AGW_PlayerController::BeginPlay()
 
 void AGW_PlayerController::Tick(float DeltaSeconds)
 {
-    if (DraggedCard)
-    {
-        UpdateDrag();
-    }
 }
 
 void AGW_PlayerController::StartDrag()
@@ -57,6 +53,7 @@ void AGW_PlayerController::StartDrag()
     if (DraggedCard && DraggedCard->bIsSnapped)
     {
         DraggedCard->DetachFromOwnerRow();
+        StartUpdateDrag();
     }
 }
 
@@ -95,8 +92,21 @@ void AGW_PlayerController::StopDrag()
         {
             DraggedCard->SetOwnerRowAsPlayerDeck();
         }
+        StopUpdateDrag();
         DraggedCard = nullptr;
     }
+}
+
+void AGW_PlayerController::StartUpdateDrag()
+{
+    // Start calling UpdateDrag() every frame (DeltaSeconds = 0.0 means every tick)
+    GetWorld()->GetTimerManager().SetTimer(UpdateDragTimerHandle, this, &AGW_PlayerController::UpdateDrag, 0.01f, true);
+}
+
+void AGW_PlayerController::StopUpdateDrag()
+{
+    // Stop the timer to stop calling UpdateDrag()
+    GetWorld()->GetTimerManager().ClearTimer(UpdateDragTimerHandle);
 }
 
 void AGW_PlayerController::UpdateDrag()
@@ -104,8 +114,8 @@ void AGW_PlayerController::UpdateDrag()
     // Update card's location to follow mouse
     FHitResult HitResult;
     GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
-    DraggedCard->SetActorLocation(HitResult.Location);
-    
+    DraggedCard->SetActorLocation(FVector(HitResult.Location.X, HitResult.Location.Y, DraggedCard->GetActorLocation().Z));
+
     // if (HitResult.GetActor())
     // {
     //     UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("HitActor: %s"), *HitResult.GetActor()->GetName()));

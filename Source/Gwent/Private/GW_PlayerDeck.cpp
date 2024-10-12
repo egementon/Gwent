@@ -44,6 +44,8 @@ void AGW_PlayerDeck::GenerateRandomCards()
 
 void AGW_PlayerDeck::BeginPlay()
 {
+	Super::BeginPlay();
+	
 	GenerateRandomCards();
 }
 

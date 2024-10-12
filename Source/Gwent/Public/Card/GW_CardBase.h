@@ -18,8 +18,6 @@ class GWENT_API AGW_CardBase : public AActor
 public:
 	AGW_CardBase();
 
-	// void UpdateCardLocation(const FVector& NewLocation);
-	// void SetMouseCollision(bool bIsActive);
 
 	// Row Functions
 	void SetOwnerRow(AGW_Row* NewOwner);
