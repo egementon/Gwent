@@ -18,6 +18,9 @@ class GWENT_API AGW_CardBase : public AActor
 public:
 	AGW_CardBase();
 
+	AGW_Row* GetOwnerRow();
+	int32 GetCardPower();
+	void SetCardPower(int32 NewCardPower);
 
 	// Row Functions
 	void SetOwnerRow(AGW_Row* NewOwner);
@@ -34,7 +37,7 @@ public:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	int32 CardPower;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	ECardRowType CardRowType;
 
@@ -47,8 +50,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	UMaterial* ColorMaterial;
 	
+	int32 BaseCardPower;
+	
 protected:
 	virtual void BeginPlay() override;
+
+	void CanActivateAbility();
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* CardMesh;

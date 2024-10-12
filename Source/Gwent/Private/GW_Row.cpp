@@ -24,6 +24,11 @@ AGW_Row::AGW_Row()
 	}
 }
 
+TArray<AGW_CardBase*> AGW_Row::GetSnappedCardsArray()
+{
+	return SnappedCardsArray;
+}
+
 void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
 {
 	SnappedCardsArray.AddUnique(AddedCard);

@@ -19,6 +19,8 @@ class GWENT_API AGW_Row : public AActor
 public:
 	AGW_Row();
 
+	TArray<AGW_CardBase*> GetSnappedCardsArray();
+	
 	void AddToCardsArray(AGW_CardBase* AddedCard);
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
 

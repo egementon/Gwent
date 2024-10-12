@@ -5,6 +5,8 @@
 
 #include "GW_GameMode.h"
 #include "GW_Row.h"
+#include "Ability/Core/GW_AbilityBase.h"
+#include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
 
 
@@ -16,8 +18,31 @@ AGW_CardBase::AGW_CardBase()
 	CardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	CardPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	CardPowerText->SetupAttachment(CardMesh);
+	
+	SetCardPower(CardPower);
+	BaseCardPower = CardPower;
+}
 
+AGW_Row* AGW_CardBase::GetOwnerRow()
+{
+	return OwnerRow;
+}
+
+int32 AGW_CardBase::GetCardPower()
+{
+	return CardPower;
+}
+
+void AGW_CardBase::SetCardPower(int32 NewCardPower)
+{
+	CardPower = NewCardPower;
 	CardPowerText->SetText(FText::AsNumber(CardPower));
+
+	const FColor PowerColor = (CardPower != BaseCardPower) 
+	? (CardPower > BaseCardPower ? FColor::Green : FColor::Red) 
+	: FColor::Black;
+	
+	CardPowerText->SetTextRenderColor(PowerColor);
 }
 
 void AGW_CardBase::InitializeCardData(FCardData NewCardData)
@@ -41,11 +66,28 @@ void AGW_CardBase::BeginPlay()
 	CardPowerText->SetText(FText::AsNumber(CardPower));
 }
 
+void AGW_CardBase::CanActivateAbility()
+{
+	if (CardAbility == ECardAbility::NoAbility) return;
+
+	UGW_AbilityBase* Ability = UGW_AbilityManager::Get()->GetAbility(CardAbility);
+	if (Ability)
+	{
+		Ability->ActivateAbility(this);
+	}
+}
+
 void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner)
 {
 	NewOwner->AddToCardsArray(this);
 	OwnerRow = NewOwner;
 	bIsSnapped = true;
+
+	// try to activate card ability if placed on a battle row
+	if (!NewOwner->bIsPlayerDeck)
+	{
+		CanActivateAbility();
+	}
 }
 
 void AGW_CardBase::DetachFromOwnerRow()
