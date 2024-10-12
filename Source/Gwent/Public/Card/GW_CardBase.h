@@ -24,7 +24,7 @@ public:
 	int32 GetBaseCardPower();
 
 	// Row Functions
-	void SetOwnerRow(AGW_Row* NewOwner);
+	void SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility);
 	void DetachFromOwnerRow();
 	void SetOwnerRowAsPlayerDeck();
 

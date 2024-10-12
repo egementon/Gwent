@@ -15,6 +15,6 @@ class GWENT_API UGW_AbilityBase : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual void ActivateAbility(class AGW_CardBase* Card) PURE_VIRTUAL(UGW_AbilityBase::ActivateAbility, );
+	virtual void ActivateAbility(class AGW_CardBase* Card);
 
 };

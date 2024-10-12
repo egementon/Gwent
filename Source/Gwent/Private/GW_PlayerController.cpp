@@ -86,7 +86,7 @@ void AGW_PlayerController::StopDrag()
 
         if (bFoundValidRow)
         {
-            DraggedCard->SetOwnerRow(RowArray[ClosestRowIndex]);
+            DraggedCard->SetOwnerRow(RowArray[ClosestRowIndex], true);
         }
         else
         {

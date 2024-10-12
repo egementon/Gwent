@@ -4,6 +4,7 @@
 #include "Ability/Core/GW_AbilityManager.h"
 
 #include "Ability/GW_AbilityMoraleBoost.h"
+#include "Ability/GW_AbilityMuster.h"
 #include "Ability/GW_AbilityTightBond.h"
 #include "Data/GW_CardDataAsset.h"
 
@@ -31,6 +32,8 @@ UGW_AbilityBase* UGW_AbilityManager::GetAbility(ECardAbility AbilityType)
 			return NewObject<UGW_Ability_MoraleBoost>();
 		case ECardAbility::TightBond:
 			return NewObject<UGW_AbilityTightBond>();
+		case ECardAbility::Muster:
+			return NewObject<UGW_AbilityMuster>();
 		default:
 			return nullptr;
 	}

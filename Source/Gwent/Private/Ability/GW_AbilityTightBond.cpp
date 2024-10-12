@@ -28,5 +28,5 @@ void UGW_AbilityTightBond::ActivateAbility(AGW_CardBase* Card)
 		Card->SetCardPower(Card->GetBaseCardPower() * SameNameRowCards.Num() + 1);
 	}
 
-	Card->GetOwnerRow()->CalculateTotalPower();
+	Super::ActivateAbility(Card);
 }

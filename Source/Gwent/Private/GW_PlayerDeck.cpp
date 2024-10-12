@@ -34,7 +34,7 @@ void AGW_PlayerDeck::GenerateRandomCards()
 		// Spawn the card
 		auto Card = GetWorld()->SpawnActorDeferred<AGW_CardBase>(CardClass, FTransform::Identity);
 		Card->InitializeCardData(SelectedCardData);
-		Card->SetOwnerRow(this);
+		Card->SetOwnerRow(this, false);
 		Card->FinishSpawning(FTransform::Identity);
 		SnappedCardsArray.AddUnique(Card);
 	}

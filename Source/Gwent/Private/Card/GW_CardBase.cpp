@@ -84,14 +84,14 @@ void AGW_CardBase::CanActivateAbility()
 	}
 }
 
-void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner)
+void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility)
 {
 	NewOwner->AddToCardsArray(this);
 	OwnerRow = NewOwner;
 	bIsSnapped = true;
 
 	// try to activate card ability if placed on a battle row
-	if (!NewOwner->bIsPlayerDeck)
+	if (bShouldActivateAbility)
 	{
 		CanActivateAbility();
 	}
@@ -107,7 +107,7 @@ void AGW_CardBase::DetachFromOwnerRow()
 void AGW_CardBase::SetOwnerRowAsPlayerDeck()
 {
 	AGW_Row* PlayerDeck = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerDeck;
-	SetOwnerRow(PlayerDeck);
+	SetOwnerRow(PlayerDeck, false);
 }
 
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
