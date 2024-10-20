@@ -19,14 +19,20 @@ class GWENT_API AGW_Row : public AActor
 public:
 	AGW_Row();
 
+	// Getters
 	TArray<AGW_CardBase*> GetSnappedCardsArray();
+	AGW_CardBase* GetSnappedSpecialCard();
+	bool IsSpecialSlotEmpty();
+	bool IsPlayerDeck();
+	// Setters
+	void SetSpecialCard(AGW_CardBase* SpecialCard);
+	void SetSpecialSlotEmpty(bool bIsEmpty);
 	
 	void AddToCardsArray(AGW_CardBase* AddedCard);
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
 	void CalculateTotalPower();
-
-	bool bIsPlayerDeck = false;
-
+	bool IsValidRowForCard(AGW_CardBase* Card);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECardRowType RowType;
 
@@ -36,14 +42,24 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* RowBoxComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UBoxComponent* SpecialSlotBoxComponent;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UTextRenderComponent* TotalPowerText;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AGW_CardBase*> SnappedCardsArray;
 
+	UPROPERTY()
+	AGW_CardBase* SnappedSpecialCard;
+
 	void UpdateCardsLocations();
 	
 	int32 TotalPower;
+
+	bool bIsPlayerDeck = false;
+	bool bIsSpecialSlotEmpty = true;
+
 	
 };

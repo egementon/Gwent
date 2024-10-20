@@ -17,6 +17,8 @@ AGW_CardBase::AGW_CardBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	SetRootComponent(CardMesh);
+	
 	CardPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	CardPowerText->SetupAttachment(CardMesh);
 	
@@ -55,8 +57,29 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 	CardName = NewCardData.Name;
 	CardPower = NewCardData.Power;
 	CardRowType = NewCardData.RowType;
+	bIsSpecialCard = NewCardData.bIsSpecial;
 	CardAbility = NewCardData.Ability;
 	CardImage = NewCardData.Image;
+}
+
+void AGW_CardBase::DestroySelf()
+{
+	if (bIsSpecialCard)
+	{
+		OwnerRow->SetSpecialCard(nullptr);
+		OwnerRow->SetSpecialSlotEmpty(true);
+	}
+	else
+	{
+		OwnerRow->RemoveFromCardsArray(this);
+	}
+	
+	Destroy();
+}
+
+void AGW_CardBase::DestroySelfAfterDelay(const float Delay)
+{
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &AGW_CardBase::DestroySelf, Delay, false);
 }
 
 void AGW_CardBase::BeginPlay()
@@ -86,7 +109,15 @@ void AGW_CardBase::CanActivateAbility()
 
 void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility)
 {
-	NewOwner->AddToCardsArray(this);
+	if (bIsSpecialCard)
+	{
+		NewOwner->SetSpecialCard(this);
+	}
+	else
+	{
+		NewOwner->AddToCardsArray(this);
+	}
+	
 	OwnerRow = NewOwner;
 	bIsSnapped = true;
 
@@ -107,7 +138,9 @@ void AGW_CardBase::DetachFromOwnerRow()
 void AGW_CardBase::SetOwnerRowAsPlayerDeck()
 {
 	AGW_Row* PlayerDeck = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerDeck;
-	SetOwnerRow(PlayerDeck, false);
+	PlayerDeck->AddToCardsArray(this);
+	OwnerRow = PlayerDeck;
+	bIsSnapped = true;
 }
 
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

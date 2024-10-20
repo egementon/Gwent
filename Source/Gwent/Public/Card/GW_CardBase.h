@@ -18,6 +18,7 @@ class GWENT_API AGW_CardBase : public AActor
 public:
 	AGW_CardBase();
 
+	// Getters
 	AGW_Row* GetOwnerRow();
 	int32 GetCardPower();
 	void SetCardPower(int32 NewCardPower);
@@ -28,9 +29,12 @@ public:
 	void DetachFromOwnerRow();
 	void SetOwnerRowAsPlayerDeck();
 
-	bool bIsSnapped;
+	bool bIsSnapped = false;
+	bool bIsSpecialCard = false;
 
 	void InitializeCardData(FCardData NewCardData);
+	void DestroySelf();
+	void DestroySelfAfterDelay(float Delay = 1.f);
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
@@ -63,11 +67,12 @@ protected:
 
 	UPROPERTY()
 	AGW_Row* OwnerRow;
-
+	
 private:
 	// for editor
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
-	
 
+	FTimerHandle DestroyTimer;
+	
 
 };

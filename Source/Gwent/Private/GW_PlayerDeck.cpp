@@ -3,8 +3,8 @@
 
 #include "GW_PlayerDeck.h"
 
-#include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
+#include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -14,6 +14,7 @@ AGW_PlayerDeck::AGW_PlayerDeck()
 	bIsPlayerDeck = true;
 
 	TotalPowerText->SetVisibility(false);
+	SpecialSlotBoxComponent->SetVisibility(false);
 }
 
 

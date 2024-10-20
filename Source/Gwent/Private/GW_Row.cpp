@@ -16,17 +16,36 @@ AGW_Row::AGW_Row()
 
 	RowBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RowBoxComponent"));
 	RowBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	
 	if (!bIsPlayerDeck)
 	{
 		TotalPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 		TotalPowerText->SetupAttachment(RowBoxComponent);
+
+		SpecialSlotBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("SpecialSlot"));
+		SpecialSlotBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		SpecialSlotBoxComponent->SetupAttachment(RowBoxComponent);
 	}
 }
 
 TArray<AGW_CardBase*> AGW_Row::GetSnappedCardsArray()
 {
 	return SnappedCardsArray;
+}
+
+AGW_CardBase* AGW_Row::GetSnappedSpecialCard()
+{
+	return SnappedSpecialCard;
+}
+
+bool AGW_Row::IsSpecialSlotEmpty()
+{
+	return bIsSpecialSlotEmpty;
+}
+
+bool AGW_Row::IsPlayerDeck()
+{
+	return bIsPlayerDeck;
 }
 
 void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
@@ -78,6 +97,53 @@ void AGW_Row::CalculateTotalPower()
 	}
 
 	TotalPowerText->SetText(FText::AsNumber(TotalPower));
+}
+
+bool AGW_Row::IsValidRowForCard(AGW_CardBase* Card)
+{
+	if (bIsPlayerDeck)
+	{
+		return false;
+	}
+	
+	if (Card->bIsSpecialCard && !bIsSpecialSlotEmpty)
+	{
+		return false;
+	}
+
+	const ECardRowType CardRowType = Card->CardRowType;
+	
+	if (CardRowType == ECardRowType::AllRows)
+	{
+		return true;
+	}
+	
+	if (this->RowType == CardRowType)
+	{
+		return true;
+	}
+	
+	if (CardRowType == ECardRowType::Agile && (this->RowType == ECardRowType::Melee || this->RowType == ECardRowType::Ranged))
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+void AGW_Row::SetSpecialCard(AGW_CardBase* SpecialCard)
+{
+	if (SpecialCard)
+	{
+		SpecialCard->SetActorLocation(SpecialSlotBoxComponent->GetComponentLocation());
+	}
+	SnappedSpecialCard = SpecialCard;
+	bIsSpecialSlotEmpty = false;
+}
+
+void AGW_Row::SetSpecialSlotEmpty(bool bIsEmpty)
+{
+	bIsSpecialSlotEmpty = bIsEmpty;
 }
 
 void AGW_Row::BeginPlay()

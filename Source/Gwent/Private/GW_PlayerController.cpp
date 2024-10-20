@@ -67,15 +67,14 @@ void AGW_PlayerController::StopDrag()
         
         float Distance = MAX_FLT;
         int32 ClosestRowIndex = 0;
-
         bool bFoundValidRow = false;
 
         for (int32 i = 0; i < RowArray.Num(); i++)
         {
-            if (!RowArray[i]->bIsPlayerDeck && DraggedCard->CardRowType == RowArray[i]->RowType)
+            if (RowArray[i]->IsValidRowForCard(DraggedCard))
             {
                 float NewDistance = FVector::Dist2D(CardLocation, RowArray[i]->GetActorLocation());
-                if (NewDistance < Distance && NewDistance < 300.f) // should be closer than 300 units to snap
+                if (NewDistance < Distance && NewDistance < 650.f) // should be closer than 650 units to snap
                 {
                     Distance = NewDistance;
                     ClosestRowIndex = i;

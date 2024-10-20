@@ -3,6 +3,8 @@
 
 #include "Ability/Core/GW_AbilityManager.h"
 
+#include "Ability/GW_AbilityClearWeather.h"
+#include "Ability\GW_AbilityBadWeather.h"
 #include "Ability/GW_AbilityMoraleBoost.h"
 #include "Ability/GW_AbilityMuster.h"
 #include "Ability/GW_AbilityTightBond.h"
@@ -34,6 +36,10 @@ UGW_AbilityBase* UGW_AbilityManager::GetAbility(ECardAbility AbilityType)
 			return NewObject<UGW_AbilityTightBond>();
 		case ECardAbility::Muster:
 			return NewObject<UGW_AbilityMuster>();
+		case ECardAbility::BadWeather:
+			return NewObject<UGW_AbilityBadWeather>();
+		case ECardAbility::ClearWeather:
+			return NewObject<UGW_AbilityClearWeather>();
 		default:
 			return nullptr;
 	}

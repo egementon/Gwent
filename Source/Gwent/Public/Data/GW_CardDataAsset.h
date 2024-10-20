@@ -10,9 +10,11 @@
 UENUM(BlueprintType)
 enum class ECardRowType : uint8
 {
-	Melee  UMETA(DisplayName = "Melee"),
-	Ranged UMETA(DisplayName = "Ranged"),
-	Siege  UMETA(DisplayName = "Siege")
+	Melee   UMETA(DisplayName = "Melee"),
+	Ranged  UMETA(DisplayName = "Ranged"),
+	Siege   UMETA(DisplayName = "Siege"),
+	Agile   UMETA(DisplayName = "Agile"), // Melee and Ranged
+	AllRows UMETA(DisplayName = "All Rows")
 };
 
 UENUM(BlueprintType)
@@ -21,7 +23,9 @@ enum class ECardAbility : uint8
 	NoAbility   UMETA(DisplayName = "No Ability"),
 	TightBond   UMETA(DisplayName = "Tight Bond"),
 	MoraleBoost UMETA(DisplayName = "Morale Boost"),
-	Muster      UMETA(DisplayName = "Muster")
+	Muster      UMETA(DisplayName = "Muster"),
+	BadWeather  UMETA(DisplayName = "Bad Weather"),
+	ClearWeather  UMETA(DisplayName = "Clear Weather")
 };
 
 
@@ -38,6 +42,9 @@ struct FCardData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	ECardRowType RowType = ECardRowType::Melee;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	bool bIsSpecial = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	ECardAbility Ability = ECardAbility::NoAbility;
