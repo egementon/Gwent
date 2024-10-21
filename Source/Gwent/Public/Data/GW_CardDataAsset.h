@@ -20,12 +20,13 @@ enum class ECardRowType : uint8
 UENUM(BlueprintType)
 enum class ECardAbility : uint8
 {
-	NoAbility   UMETA(DisplayName = "No Ability"),
-	TightBond   UMETA(DisplayName = "Tight Bond"),
-	MoraleBoost UMETA(DisplayName = "Morale Boost"),
-	Muster      UMETA(DisplayName = "Muster"),
-	BadWeather  UMETA(DisplayName = "Bad Weather"),
-	ClearWeather  UMETA(DisplayName = "Clear Weather")
+	NoAbility    UMETA(DisplayName = "No Ability"),
+	TightBond    UMETA(DisplayName = "Tight Bond"),
+	MoraleBoost  UMETA(DisplayName = "Morale Boost"),
+	Muster       UMETA(DisplayName = "Muster"),
+	BadWeather   UMETA(DisplayName = "Bad Weather"),
+	ClearWeather UMETA(DisplayName = "Clear Weather"),
+	Scorch       UMETA(DisplayName = "Scorch")
 };
 
 

@@ -16,6 +16,7 @@ class GWENT_API AGW_GameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	//void CalculatePowerAllRows();
 
 	TObjectPtr<AGW_Row> PlayerDeck;
 	TArray<AGW_Row*> RowArray;

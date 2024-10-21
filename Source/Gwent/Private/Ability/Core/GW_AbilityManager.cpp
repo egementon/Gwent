@@ -7,6 +7,7 @@
 #include "Ability\GW_AbilityBadWeather.h"
 #include "Ability/GW_AbilityMoraleBoost.h"
 #include "Ability/GW_AbilityMuster.h"
+#include "Ability/GW_AbilityScorch.h"
 #include "Ability/GW_AbilityTightBond.h"
 #include "Data/GW_CardDataAsset.h"
 
@@ -40,8 +41,9 @@ UGW_AbilityBase* UGW_AbilityManager::GetAbility(ECardAbility AbilityType)
 			return NewObject<UGW_AbilityBadWeather>();
 		case ECardAbility::ClearWeather:
 			return NewObject<UGW_AbilityClearWeather>();
+		case ECardAbility::Scorch:
+			return NewObject<UGW_AbilityScorch>();
 		default:
 			return nullptr;
 	}
-	return nullptr;
 }
