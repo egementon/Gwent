@@ -30,7 +30,8 @@ public:
 	void SetOwnerRowAsPlayerDeck();
 
 	bool bIsSnapped = false;
-	bool bIsSpecialCard = false;
+	bool bIsSpecial = false; // placed on the special slot on the row
+	bool bIsHero = false; // can not be affected from buff/debuffs, i.e. immune card
 
 	void InitializeCardData(FCardData NewCardData);
 	void DestroySelf();

@@ -106,7 +106,7 @@ bool AGW_Row::IsValidRowForCard(AGW_CardBase* Card)
 		return false;
 	}
 	
-	if (Card->bIsSpecialCard && !bIsSpecialSlotEmpty)
+	if (Card->bIsSpecial && !bIsSpecialSlotEmpty)
 	{
 		return false;
 	}

@@ -10,22 +10,34 @@
 UENUM(BlueprintType)
 enum class ECardRowType : uint8
 {
+	// can be placed only on Melee row.
 	Melee   UMETA(DisplayName = "Melee"),
+	// can be placed only on Ranged row.
 	Ranged  UMETA(DisplayName = "Ranged"),
+	// can be placed only on Siege row.
 	Siege   UMETA(DisplayName = "Siege"),
-	Agile   UMETA(DisplayName = "Agile"), // Melee and Ranged
+	// can be placed on Melee or Ranged rows.
+	Agile   UMETA(DisplayName = "Agile"),
+	// can be placed only on any row.
 	AllRows UMETA(DisplayName = "All Rows")
 };
 
 UENUM(BlueprintType)
 enum class ECardAbility : uint8
 {
+	// standard card
 	NoAbility    UMETA(DisplayName = "No Ability"),
+	// when placed next to a card with the same name, doubles the strength of both (or more) cards.
 	TightBond    UMETA(DisplayName = "Tight Bond"),
+	// add +1 strength to all units in the row in which they are played, excluding themselves.
 	MoraleBoost  UMETA(DisplayName = "Morale Boost"),
+	// when played, automatically find any cards with the same name in your deck and play them instantly.
 	Muster       UMETA(DisplayName = "Muster"),
+	// reduces the strength of all cards of a given row on the battlefield, including your own.
 	BadWeather   UMETA(DisplayName = "Bad Weather"),
+	// removes all Weather Card effects. 
 	ClearWeather UMETA(DisplayName = "Clear Weather"),
+	// destroys the strongest card(s) on the battlefield 
 	Scorch       UMETA(DisplayName = "Scorch")
 };
 
@@ -46,6 +58,9 @@ struct FCardData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	bool bIsSpecial = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	bool bIsHero = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	ECardAbility Ability = ECardAbility::NoAbility;

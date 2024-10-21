@@ -22,7 +22,6 @@ AGW_CardBase::AGW_CardBase()
 	CardPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	CardPowerText->SetupAttachment(CardMesh);
 	
-	SetCardPower(CardPower);
 }
 
 AGW_Row* AGW_CardBase::GetOwnerRow()
@@ -37,11 +36,16 @@ int32 AGW_CardBase::GetCardPower()
 
 void AGW_CardBase::SetCardPower(int32 NewCardPower)
 {
+	if (bIsHero) return; // hero cards are immune to buff/debuffs
+	
 	CardPower = NewCardPower;
 	CardPowerText->SetText(FText::AsNumber(CardPower));
 
+	constexpr FColor DarkGreen = FColor(0, 70, 0);
+	constexpr FColor DarkRed = FColor(70, 0, 0);
+
 	const FColor PowerColor = (CardPower != BaseCardPower) 
-	? (CardPower > BaseCardPower ? FColor::Green : FColor::Red) 
+	? (CardPower > BaseCardPower ? DarkGreen : DarkRed) 
 	: FColor::Black;
 	
 	CardPowerText->SetTextRenderColor(PowerColor);
@@ -57,14 +61,15 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 	CardName = NewCardData.Name;
 	CardPower = NewCardData.Power;
 	CardRowType = NewCardData.RowType;
-	bIsSpecialCard = NewCardData.bIsSpecial;
+	bIsSpecial = NewCardData.bIsSpecial;
+	bIsHero = NewCardData.bIsHero;
 	CardAbility = NewCardData.Ability;
 	CardImage = NewCardData.Image;
 }
 
 void AGW_CardBase::DestroySelf()
 {
-	if (bIsSpecialCard)
+	if (bIsSpecial)
 	{
 		OwnerRow->SetSpecialCard(nullptr);
 		OwnerRow->SetSpecialSlotEmpty(true);
@@ -93,7 +98,7 @@ void AGW_CardBase::BeginPlay()
 	}
 	
 	BaseCardPower = CardPower;
-	SetCardPower(CardPower);
+	CardPowerText->SetText(FText::AsNumber(CardPower));
 }
 
 void AGW_CardBase::CanActivateAbility()
@@ -109,7 +114,7 @@ void AGW_CardBase::CanActivateAbility()
 
 void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility)
 {
-	if (bIsSpecialCard)
+	if (bIsSpecial)
 	{
 		NewOwner->SetSpecialCard(this);
 	}
