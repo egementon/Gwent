@@ -21,15 +21,17 @@ AGW_CardBase::AGW_CardBase()
 	
 	CardPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	CardPowerText->SetupAttachment(CardMesh);
-	
+
+	CardPowerText->SetText(FText::AsNumber(CardPower));
+	CardPowerText->SetTextRenderColor(FColor::Black);
 }
 
-AGW_Row* AGW_CardBase::GetOwnerRow()
+AGW_Row* AGW_CardBase::GetOwnerRow() const
 {
 	return OwnerRow;
 }
 
-int32 AGW_CardBase::GetCardPower()
+int32 AGW_CardBase::GetCardPower() const
 {
 	return CardPower;
 }
@@ -51,7 +53,7 @@ void AGW_CardBase::SetCardPower(int32 NewCardPower)
 	CardPowerText->SetTextRenderColor(PowerColor);
 }
 
-int32 AGW_CardBase::GetBaseCardPower()
+int32 AGW_CardBase::GetBaseCardPower() const
 {
 	return BaseCardPower;
 }
@@ -97,8 +99,16 @@ void AGW_CardBase::BeginPlay()
 		CardMesh->SetMaterial(0, DynamicMaterial);
 	}
 	
-	BaseCardPower = CardPower;
-	CardPowerText->SetText(FText::AsNumber(CardPower));
+	if (CardPower != 0)
+	{
+		BaseCardPower = CardPower;
+		CardPowerText->SetText(FText::AsNumber(CardPower));
+		CardPowerText->SetTextRenderColor(FColor::Black);
+	}
+	else
+	{
+		CardPowerText->SetText(FText());
+	}
 }
 
 void AGW_CardBase::CanActivateAbility()

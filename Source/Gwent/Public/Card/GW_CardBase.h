@@ -19,10 +19,10 @@ public:
 	AGW_CardBase();
 
 	// Getters
-	AGW_Row* GetOwnerRow();
-	int32 GetCardPower();
+	AGW_Row* GetOwnerRow() const;
+	int32 GetCardPower() const;
 	void SetCardPower(int32 NewCardPower);
-	int32 GetBaseCardPower();
+	int32 GetBaseCardPower() const;
 
 	// Row Functions
 	void SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility);

@@ -13,7 +13,7 @@ void UGW_AbilityTightBond::ActivateAbility(AGW_CardBase* Card)
 	
 	for (AGW_CardBase* RowCard : RowCards)
 	{
-		if (RowCard != Card && Card->CardName == RowCard->CardName)
+		if (Card->CardName == RowCard->CardName)
 		{
 			SameNameRowCards.Add(RowCard);
 		}
@@ -23,9 +23,8 @@ void UGW_AbilityTightBond::ActivateAbility(AGW_CardBase* Card)
 	{
 		for (AGW_CardBase* SameNameRowCard : SameNameRowCards)
 		{
-			SameNameRowCard->SetCardPower(SameNameRowCard->GetBaseCardPower() * SameNameRowCards.Num() + 1);
+			SameNameRowCard->SetCardPower(SameNameRowCard->GetBaseCardPower() * SameNameRowCards.Num());
 		}
-		Card->SetCardPower(Card->GetBaseCardPower() * SameNameRowCards.Num() + 1);
 	}
 
 	Super::ActivateAbility(Card);
