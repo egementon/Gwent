@@ -38,7 +38,9 @@ enum class ECardAbility : uint8
 	// removes all Weather Card effects. 
 	ClearWeather UMETA(DisplayName = "Clear Weather"),
 	// destroys the strongest card(s) on the battlefield 
-	Scorch       UMETA(DisplayName = "Scorch")
+	Scorch       UMETA(DisplayName = "Scorch"),
+	// double the strength of the selected row (except if another horn is already being used on the row).
+	Horn         UMETA(DisplayName = "Horn")
 };
 
 
@@ -67,6 +69,9 @@ struct FCardData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	UTexture2D* Image = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	bool bDebug_ExcludeFromDeck = false;
 
 };
 

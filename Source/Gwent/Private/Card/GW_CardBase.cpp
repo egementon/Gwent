@@ -98,16 +98,17 @@ void AGW_CardBase::BeginPlay()
 		DynamicMaterial->SetTextureParameterValue(FName("CardTexture"), CardImage);
 		CardMesh->SetMaterial(0, DynamicMaterial);
 	}
-	
-	if (CardPower != 0)
+
+	// Card Power is already written in Hero Cards. Also some cards do not have any power to be written (0)
+	if (CardPower == 0 || bIsHero)
+	{
+		CardPowerText->SetText(FText());
+	}
+	else
 	{
 		BaseCardPower = CardPower;
 		CardPowerText->SetText(FText::AsNumber(CardPower));
 		CardPowerText->SetTextRenderColor(FColor::Black);
-	}
-	else
-	{
-		CardPowerText->SetText(FText());
 	}
 }
 
