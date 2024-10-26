@@ -30,7 +30,7 @@ public:
 	
 	void AddToCardsArray(AGW_CardBase* AddedCard);
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
-	void CalculateTotalPower();
+	void CalculateRowPower();
 	bool IsValidRowForCard(AGW_CardBase* Card);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

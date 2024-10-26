@@ -20,13 +20,13 @@ void UGW_AbilityScorch::ActivateAbility(AGW_CardBase* Card)
 		{
 			if (RowCard == Card) continue; // exclude scorch card
 			
-			if (RowCard->CardPower > HighestCardPower)
+			if (RowCard->GetCardPower() > HighestCardPower)
 			{
-				HighestCardPower = RowCard->CardPower;
+				HighestCardPower = RowCard->GetCardPower();
 				HighestCardsArray.Empty();
 				HighestCardsArray.Add(RowCard);
 			}
-			else if (RowCard->CardPower == HighestCardPower)
+			else if (RowCard->GetCardPower() == HighestCardPower)
 			{
 				HighestCardsArray.Add(RowCard);
 			}

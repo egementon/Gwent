@@ -20,9 +20,13 @@ public:
 
 	// Getters
 	AGW_Row* GetOwnerRow() const;
+	FName GetCardName() const;
 	int32 GetCardPower() const;
-	void SetCardPower(int32 NewCardPower);
+	ECardRowType GetCardRowType() const;
+	ECardAbility GetCardAbility() const;
 	int32 GetBaseCardPower() const;
+	
+	void SetCardPower(int32 NewCardPower);
 
 	// Row Functions
 	void SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility);
@@ -36,6 +40,22 @@ public:
 	void InitializeCardData(FCardData NewCardData);
 	void DestroySelf();
 	void DestroySelfAfterDelay(float Delay = 1.f);
+	
+protected:
+	virtual void BeginPlay() override;
+
+	void CanActivateAbility();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UStaticMeshComponent* CardMesh;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UTextRenderComponent* CardPowerText;
+
+	UPROPERTY()
+	AGW_Row* OwnerRow;
+	
+	int32 BaseCardPower;
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
@@ -52,22 +72,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	UTexture2D* CardImage;
-	
-	int32 BaseCardPower;
-	
-protected:
-	virtual void BeginPlay() override;
-
-	void CanActivateAbility();
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UStaticMeshComponent* CardMesh;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UTextRenderComponent* CardPowerText;
-
-	UPROPERTY()
-	AGW_Row* OwnerRow;
 	
 private:
 	// for editor

@@ -16,7 +16,7 @@ void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 	
 	for (AGW_CardBase* DeckCard : PlayerDeckCards)
 	{
-		if (Card->CardName == DeckCard->CardName)
+		if (Card->GetCardName() == DeckCard->GetCardName())
 		{
 			SameNameDeckCards.Add(DeckCard);
 		}

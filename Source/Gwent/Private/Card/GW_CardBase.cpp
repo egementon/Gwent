@@ -31,9 +31,24 @@ AGW_Row* AGW_CardBase::GetOwnerRow() const
 	return OwnerRow;
 }
 
+FName AGW_CardBase::GetCardName() const
+{
+	return CardName;
+}
+
 int32 AGW_CardBase::GetCardPower() const
 {
 	return CardPower;
+}
+
+ECardRowType AGW_CardBase::GetCardRowType() const
+{
+	return CardRowType;
+}
+
+ECardAbility AGW_CardBase::GetCardAbility() const
+{
+	return CardAbility;
 }
 
 void AGW_CardBase::SetCardPower(int32 NewCardPower)

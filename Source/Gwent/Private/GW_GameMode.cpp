@@ -14,6 +14,6 @@ void AGW_GameMode::BeginPlay()
 // {
 // 	for (AGW_Row* Row : RowArray)
 // 	{
-// 		Row->CalculateTotalPower();
+// 		Row->CalculateRowPower();
 // 	}
 // }

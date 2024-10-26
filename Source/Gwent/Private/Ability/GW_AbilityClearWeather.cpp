@@ -17,7 +17,7 @@ void UGW_AbilityClearWeather::ActivateAbility(AGW_CardBase* Card)
 	{
 		if (!RowArray[i]->IsSpecialSlotEmpty() && RowArray[i]->GetSnappedSpecialCard()->IsValidLowLevel())
 		{
-			if (RowArray[i]->GetSnappedSpecialCard()->CardAbility == ECardAbility::BadWeather)
+			if (RowArray[i]->GetSnappedSpecialCard()->GetCardAbility() == ECardAbility::BadWeather)
 			{
 				RowArray[i]->GetSnappedSpecialCard()->DestroySelfAfterDelay(0.15f);
 
@@ -25,14 +25,15 @@ void UGW_AbilityClearWeather::ActivateAbility(AGW_CardBase* Card)
 				TArray<AGW_CardBase*> RowCards = RowArray[i]->GetSnappedCardsArray();
 				for (AGW_CardBase* RowCard : RowCards)
 				{
-					RowCard->SetCardPower(RowCard->BaseCardPower);
+					RowCard->SetCardPower(RowCard->GetBaseCardPower());
 				}
 
-				RowArray[i]->CalculateTotalPower();
+				RowArray[i]->CalculateRowPower();
 			}
 		}
 	}
 	
 	// destroy Clear Weather card
 	Card->DestroySelfAfterDelay();
+
 }

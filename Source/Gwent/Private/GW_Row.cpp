@@ -59,7 +59,7 @@ void AGW_Row::RemoveFromCardsArray(AGW_CardBase* RemovedCard)
 {
 	SnappedCardsArray.Remove(RemovedCard);
 	UpdateCardsLocations();
-	if (!bIsPlayerDeck) CalculateTotalPower();
+	if (!bIsPlayerDeck) CalculateRowPower();
 }
 
 void AGW_Row::UpdateCardsLocations()
@@ -92,7 +92,7 @@ void AGW_Row::CalculateTotalPower()
 	{
 		for (AGW_CardBase* Card : SnappedCardsArray)
 		{
-			TotalPower += Card->CardPower;
+			TotalPower += Card->GetCardPower();
 		}
 	}
 
@@ -111,7 +111,7 @@ bool AGW_Row::IsValidRowForCard(AGW_CardBase* Card)
 		return false;
 	}
 
-	const ECardRowType CardRowType = Card->CardRowType;
+	const ECardRowType CardRowType = Card->GetCardRowType();
 	
 	if (CardRowType == ECardRowType::AllRows)
 	{

@@ -13,7 +13,7 @@ void UGW_AbilityTightBond::ActivateAbility(AGW_CardBase* Card)
 	
 	for (AGW_CardBase* RowCard : RowCards)
 	{
-		if (Card->CardName == RowCard->CardName)
+		if (Card->GetCardName() == RowCard->GetCardName())
 		{
 			SameNameRowCards.Add(RowCard);
 		}
