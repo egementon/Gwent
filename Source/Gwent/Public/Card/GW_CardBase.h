@@ -40,6 +40,13 @@ public:
 	void InitializeCardData(FCardData NewCardData);
 	void DestroySelf();
 	void DestroySelfAfterDelay(float Delay = 1.f);
+
+	// Card Power Parameters
+	bool bHasWeatherDamage = false;
+	bool bHasHornBoost = false;
+	int32 TightBondMultiplier = 1;
+	int32 MoraleBoost = 0;
+	void CalculatePower();
 	
 protected:
 	virtual void BeginPlay() override;
@@ -79,5 +86,4 @@ private:
 
 	FTimerHandle DestroyTimer;
 	
-
 };

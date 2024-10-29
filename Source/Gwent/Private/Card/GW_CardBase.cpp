@@ -82,10 +82,29 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 	bIsHero = NewCardData.bIsHero;
 	CardAbility = NewCardData.Ability;
 	CardImage = NewCardData.Image;
+	BaseCardPower = CardPower;
 }
 
 void AGW_CardBase::DestroySelf()
 {
+	// card specific destroy events
+	if (CardAbility == ECardAbility::MoraleBoost)
+	{
+		GetOwnerRow()->RowMoraleBoostAddition--;
+		GetOwnerRow()->UpdateAllCardsPowers();
+	}
+	if (CardAbility == ECardAbility::TightBond)
+	{
+		GetOwnerRow()->OnTightBondedCardRemoved(this);
+		GetOwnerRow()->UpdateAllCardsPowers();
+	}
+	if (CardAbility == ECardAbility::BadWeather)
+	{
+		GetOwnerRow()->bRowHasBadWeather = false;
+		GetOwnerRow()->UpdateAllCardsPowers();
+	}
+
+	// general destroy events
 	if (bIsSpecial)
 	{
 		OwnerRow->SetSpecialCard(nullptr);
@@ -104,6 +123,12 @@ void AGW_CardBase::DestroySelfAfterDelay(const float Delay)
 	GetWorld()->GetTimerManager().SetTimer(DestroyTimer, this, &AGW_CardBase::DestroySelf, Delay, false);
 }
 
+void AGW_CardBase::CalculatePower()
+{
+	const int32 Power = ((bHasWeatherDamage ? 1 : BaseCardPower) * TightBondMultiplier + MoraleBoost) * (bHasHornBoost ? 2 : 1);
+	SetCardPower(Power);
+}
+
 void AGW_CardBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -117,11 +142,10 @@ void AGW_CardBase::BeginPlay()
 	// Card Power is already written in Hero Cards. Also some cards do not have any power to be written (0)
 	if (CardPower == 0 || bIsHero)
 	{
-		CardPowerText->SetText(FText());
+		CardPowerText->SetVisibility(false);
 	}
 	else
 	{
-		BaseCardPower = CardPower;
 		CardPowerText->SetText(FText::AsNumber(CardPower));
 		CardPowerText->SetTextRenderColor(FColor::Black);
 	}
@@ -138,8 +162,17 @@ void AGW_CardBase::CanActivateAbility()
 	}
 }
 
-void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility)
+void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, const bool bShouldActivateAbility)
 {
+	OwnerRow = NewOwner;
+	bIsSnapped = true;
+
+	// try to activate card ability
+	if (bShouldActivateAbility)
+	{
+		CanActivateAbility();
+	}
+	
 	if (bIsSpecial)
 	{
 		NewOwner->SetSpecialCard(this);
@@ -147,15 +180,6 @@ void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility)
 	else
 	{
 		NewOwner->AddToCardsArray(this);
-	}
-	
-	OwnerRow = NewOwner;
-	bIsSnapped = true;
-
-	// try to activate card ability if placed on a battle row
-	if (bShouldActivateAbility)
-	{
-		CanActivateAbility();
 	}
 }
 

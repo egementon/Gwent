@@ -30,6 +30,4 @@ void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 			SameNameRowCard->SetOwnerRow(Card->GetOwnerRow(), false);
 		}
 	}
-
-	Super::ActivateAbility(Card);
 }

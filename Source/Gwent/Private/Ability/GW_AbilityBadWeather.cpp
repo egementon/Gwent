@@ -9,12 +9,5 @@
 void UGW_AbilityBadWeather::ActivateAbility(AGW_CardBase* Card)
 {
 	// TODO: should affect enemy row as well
-	TArray<AGW_CardBase*> RowCards = Card->GetOwnerRow()->GetSnappedCardsArray();
-
-	for (AGW_CardBase* RowCard : RowCards)
-	{
-		RowCard->SetCardPower(1);
-	}
-	
-	Super::ActivateAbility(Card);
+	Card->GetOwnerRow()->bRowHasBadWeather = true;
 }

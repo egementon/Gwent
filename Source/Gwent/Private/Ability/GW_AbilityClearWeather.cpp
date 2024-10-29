@@ -20,20 +20,10 @@ void UGW_AbilityClearWeather::ActivateAbility(AGW_CardBase* Card)
 			if (RowArray[i]->GetSnappedSpecialCard()->GetCardAbility() == ECardAbility::BadWeather)
 			{
 				RowArray[i]->GetSnappedSpecialCard()->DestroySelfAfterDelay(0.15f);
-
-				// remove weather debuffs from all affected cards
-				TArray<AGW_CardBase*> RowCards = RowArray[i]->GetSnappedCardsArray();
-				for (AGW_CardBase* RowCard : RowCards)
-				{
-					RowCard->SetCardPower(RowCard->GetBaseCardPower());
-				}
-
-				RowArray[i]->CalculateRowPower();
 			}
 		}
 	}
 	
 	// destroy Clear Weather card
 	Card->DestroySelfAfterDelay();
-
 }

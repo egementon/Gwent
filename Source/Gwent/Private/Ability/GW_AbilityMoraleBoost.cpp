@@ -8,15 +8,5 @@
 
 void UGW_Ability_MoraleBoost::ActivateAbility(AGW_CardBase* Card)
 {
-	TArray<AGW_CardBase*> RowCards = Card->GetOwnerRow()->GetSnappedCardsArray();
-
-	for (AGW_CardBase* RowCard : RowCards)
-	{
-		if (RowCard != Card)
-		{
-			RowCard->SetCardPower(RowCard->GetCardPower() + 1);
-		}
-	}
-
-	Super::ActivateAbility(Card);
+	Card->GetOwnerRow()->RowMoraleBoostAddition++;
 }

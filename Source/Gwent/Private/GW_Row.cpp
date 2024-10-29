@@ -52,14 +52,20 @@ void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
 {
 	SnappedCardsArray.AddUnique(AddedCard);
 	UpdateCardsLocations();
-	if (!bIsPlayerDeck) CalculateTotalPower();
+
+	if (bIsPlayerDeck) return; // If it is player deck, do not calculate any power
+	UpdateAllCardsPowers();
+	CalculateRowPower();
 }
 
 void AGW_Row::RemoveFromCardsArray(AGW_CardBase* RemovedCard)
 {
 	SnappedCardsArray.Remove(RemovedCard);
 	UpdateCardsLocations();
-	if (!bIsPlayerDeck) CalculateRowPower();
+	
+	if (bIsPlayerDeck) return; // If it is player deck, do not calculate any power
+	UpdateAllCardsPowers();
+	CalculateRowPower();
 }
 
 void AGW_Row::UpdateCardsLocations()
@@ -85,7 +91,63 @@ void AGW_Row::UpdateCardsLocations()
 	}
 }
 
-void AGW_Row::CalculateTotalPower()
+void AGW_Row::SetCardPowerParameters(AGW_CardBase* AddedCard)
+{
+	// Update Card's power calculation parameters according to Row
+	if (bRowHasBadWeather)
+	{
+		AddedCard->bHasWeatherDamage = true;
+	}
+	else
+	{
+		AddedCard->bHasWeatherDamage = false;
+	}
+
+	if (RowMoraleBoostAddition > 0)
+	{
+		int32 Addition = RowMoraleBoostAddition;
+		if (AddedCard->GetCardAbility() == ECardAbility::MoraleBoost)
+		{
+			--Addition;
+		}
+		
+		AddedCard->MoraleBoost = Addition;
+	}
+
+	if (AddedCard->GetCardAbility() == ECardAbility::TightBond)
+	{
+		if (const TArray<AGW_CardBase*>* BondedArray = TightBondedCards.Find(AddedCard->GetCardName()))
+		{
+			const int32 BondedCount = BondedArray->Num();
+			AddedCard->TightBondMultiplier = BondedCount;
+		}
+	}
+	
+	if (bRowHasHorn)
+	{
+		AddedCard->bHasHornBoost = true;
+	}
+	else
+	{
+		AddedCard->bHasHornBoost = false;
+	}
+
+	// calculate a card's power based on set parameters
+	AddedCard->CalculatePower();
+}
+
+void AGW_Row::UpdateAllCardsPowers()
+{
+	if (!SnappedCardsArray.IsEmpty())
+	{
+		for (AGW_CardBase* Card : SnappedCardsArray)
+		{
+			SetCardPowerParameters(Card);
+		}
+	}
+}
+
+void AGW_Row::CalculateRowPower()
 {
 	TotalPower = 0;
 	if (!SnappedCardsArray.IsEmpty())
@@ -139,11 +201,32 @@ void AGW_Row::SetSpecialCard(AGW_CardBase* SpecialCard)
 	}
 	SnappedSpecialCard = SpecialCard;
 	bIsSpecialSlotEmpty = false;
+	UpdateAllCardsPowers();
+	CalculateRowPower();
 }
 
 void AGW_Row::SetSpecialSlotEmpty(bool bIsEmpty)
 {
 	bIsSpecialSlotEmpty = bIsEmpty;
+}
+
+void AGW_Row::OnTightBondedCardRemoved(AGW_CardBase* DestroyedCard)
+{
+	// TODO: Test this with Decoy card when added
+	if (TArray<AGW_CardBase*>* BondedArray = TightBondedCards.Find(DestroyedCard->GetCardName()))
+	{
+		// Remove the card from the array
+		BondedArray->Remove(DestroyedCard);
+
+		UE_LOG(LogTemp, Log, TEXT("Removed %s from bonded array. Remaining cards: %d"), *DestroyedCard->GetCardName().ToString(), BondedArray->Num());
+
+		// If the array is now empty, remove the entry from the map
+		if (BondedArray->Num() == 0)
+		{
+			TightBondedCards.Remove(DestroyedCard->GetCardName());
+			UE_LOG(LogTemp, Log, TEXT("Bonded array for %s is now empty and has been removed from the map."), *DestroyedCard->GetCardName().ToString());
+		}
+	}
 }
 
 void AGW_Row::BeginPlay()

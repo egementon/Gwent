@@ -8,24 +8,7 @@
 
 void UGW_AbilityTightBond::ActivateAbility(AGW_CardBase* Card)
 {
-	TArray<AGW_CardBase*> RowCards = Card->GetOwnerRow()->GetSnappedCardsArray();
-	TArray<AGW_CardBase*> SameNameRowCards;
-	
-	for (AGW_CardBase* RowCard : RowCards)
-	{
-		if (Card->GetCardName() == RowCard->GetCardName())
-		{
-			SameNameRowCards.Add(RowCard);
-		}
-	}
-
-	if (SameNameRowCards.Num() > 0)
-	{
-		for (AGW_CardBase* SameNameRowCard : SameNameRowCards)
-		{
-			SameNameRowCard->SetCardPower(SameNameRowCard->GetBaseCardPower() * SameNameRowCards.Num());
-		}
-	}
-
-	Super::ActivateAbility(Card);
+	// Add card to the tight-bonded array for its name
+	TArray<AGW_CardBase*>& BondedArray = Card->GetOwnerRow()->TightBondedCards.FindOrAdd(Card->GetCardName());
+	BondedArray.Add(Card);
 }

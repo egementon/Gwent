@@ -8,6 +8,4 @@
 
 void UGW_AbilityBase::ActivateAbility(AGW_CardBase* Card)
 {
-	// call at the end of ability to update row's total power
-	Card->GetOwnerRow()->CalculateRowPower();
 }

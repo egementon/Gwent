@@ -24,18 +24,29 @@ public:
 	AGW_CardBase* GetSnappedSpecialCard();
 	bool IsSpecialSlotEmpty();
 	bool IsPlayerDeck();
+	
 	// Setters
 	void SetSpecialCard(AGW_CardBase* SpecialCard);
 	void SetSpecialSlotEmpty(bool bIsEmpty);
 	
 	void AddToCardsArray(AGW_CardBase* AddedCard);
 	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
+	void UpdateAllCardsPowers();
 	void CalculateRowPower();
 	bool IsValidRowForCard(AGW_CardBase* Card);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECardRowType RowType;
-
+	
+	// Card power calculation parameters in row
+	bool bRowHasBadWeather = false;
+	bool bRowHasHorn = false;
+	int32 RowMoraleBoostAddition = 0;
+	
+	// tight-bonded cards
+	TMap<FName, TArray<AGW_CardBase*>> TightBondedCards;
+	void OnTightBondedCardRemoved(AGW_CardBase* RemovedCard);
+	
 protected:
 	virtual void BeginPlay() override;
 
@@ -54,6 +65,7 @@ protected:
 	UPROPERTY()
 	AGW_CardBase* SnappedSpecialCard;
 
+	void SetCardPowerParameters(AGW_CardBase* AddedCard);
 	void UpdateCardsLocations();
 	
 	int32 TotalPower;

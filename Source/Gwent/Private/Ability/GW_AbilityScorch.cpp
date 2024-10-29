@@ -18,7 +18,7 @@ void UGW_AbilityScorch::ActivateAbility(AGW_CardBase* Card)
 		TArray<AGW_CardBase*> RowCards = RowArray[i]->GetSnappedCardsArray();
 		for (AGW_CardBase* RowCard : RowCards)
 		{
-			if (RowCard == Card) continue; // exclude scorch card
+			if (RowCard == Card || RowCard->bIsHero) continue; // exclude self and hero cards
 			
 			if (RowCard->GetCardPower() > HighestCardPower)
 			{

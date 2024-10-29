@@ -8,12 +8,5 @@
 
 void UGW_AbilityHorn::ActivateAbility(AGW_CardBase* Card)
 {
-	TArray<AGW_CardBase*> RowCards = Card->GetOwnerRow()->GetSnappedCardsArray();
-
-	for (AGW_CardBase* RowCard : RowCards)
-	{
-		RowCard->SetCardPower(RowCard->GetCardPower() * 2);
-	}
-	
-	Super::ActivateAbility(Card);
+	Card->GetOwnerRow()->bRowHasHorn = true;
 }
