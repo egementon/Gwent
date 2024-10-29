@@ -23,7 +23,7 @@ public:
 	TArray<AGW_CardBase*> GetSnappedCardsArray();
 	AGW_CardBase* GetSnappedSpecialCard();
 	bool IsSpecialSlotEmpty();
-	bool IsPlayerDeck();
+	bool IsPlayerHand();
 	
 	// Setters
 	void SetSpecialCard(AGW_CardBase* SpecialCard);
@@ -70,7 +70,7 @@ protected:
 	
 	int32 TotalPower;
 
-	bool bIsPlayerDeck = false;
+	bool bIsPlayerHand = false;
 	bool bIsSpecialSlotEmpty = true;
 
 	

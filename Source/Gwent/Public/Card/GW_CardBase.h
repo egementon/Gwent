@@ -31,7 +31,7 @@ public:
 	// Row Functions
 	void SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility);
 	void DetachFromOwnerRow();
-	void SetOwnerRowAsPlayerDeck();
+	void SetOwnerRowAsPlayerHand();
 
 	bool bIsSnapped = false;
 	bool bIsSpecial = false; // placed on the special slot on the row

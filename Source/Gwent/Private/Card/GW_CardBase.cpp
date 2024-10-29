@@ -190,11 +190,11 @@ void AGW_CardBase::DetachFromOwnerRow()
 	bIsSnapped = false;
 }
 
-void AGW_CardBase::SetOwnerRowAsPlayerDeck()
+void AGW_CardBase::SetOwnerRowAsPlayerHand()
 {
-	AGW_Row* PlayerDeck = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerDeck;
-	PlayerDeck->AddToCardsArray(this);
-	OwnerRow = PlayerDeck;
+	AGW_Row* PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand;
+	PlayerHand->AddToCardsArray(this);
+	OwnerRow = PlayerHand;
 	bIsSnapped = true;
 }
 

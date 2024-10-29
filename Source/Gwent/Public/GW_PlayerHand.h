@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "GW_Row.h"
 #include "GameFramework/Actor.h"
-#include "GW_PlayerDeck.generated.h"
+#include "GW_PlayerHand.generated.h"
 
 class UGW_CardDataAsset;
 class AGW_CardBase;
 class UBoxComponent;
 
 UCLASS()
-class GWENT_API AGW_PlayerDeck : public AGW_Row
+class GWENT_API AGW_PlayerHand : public AGW_Row
 {
 	GENERATED_BODY()
 
 public:
-	AGW_PlayerDeck();
+	AGW_PlayerHand();
 
 protected:
 	virtual void BeginPlay() override;

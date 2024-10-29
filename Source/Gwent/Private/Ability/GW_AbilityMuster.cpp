@@ -10,11 +10,11 @@
 void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 {
 	// TODO: expand it with not only hand but also deck
-	AGW_Row* PlayerDeck = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->PlayerDeck;
-	TArray<AGW_CardBase*> PlayerDeckCards = PlayerDeck->GetSnappedCardsArray();
+	AGW_Row* PlayerHand = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->PlayerHand;
+	TArray<AGW_CardBase*> PlayerHandCards = PlayerHand->GetSnappedCardsArray();
 	TArray<AGW_CardBase*> SameNameDeckCards;
 	
-	for (AGW_CardBase* DeckCard : PlayerDeckCards)
+	for (AGW_CardBase* DeckCard : PlayerHandCards)
 	{
 		if (Card->GetCardName() == DeckCard->GetCardName())
 		{

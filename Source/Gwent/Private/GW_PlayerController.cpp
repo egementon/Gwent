@@ -60,7 +60,7 @@ void AGW_PlayerController::StartDrag()
 void AGW_PlayerController::StopDrag()
 {
     // TODO: It should work with Collisions not distance, because rows are rectangle not uniform like sphere
-    // Snap the card to the nearest row (which is not PlayerDeck) when dropping
+    // Snap the card to the nearest row (which is not PlayerHand) when dropping
     if (DraggedCard)
     {
         FVector CardLocation = DraggedCard->GetActorLocation();
@@ -89,7 +89,7 @@ void AGW_PlayerController::StopDrag()
         }
         else
         {
-            DraggedCard->SetOwnerRowAsPlayerDeck();
+            DraggedCard->SetOwnerRowAsPlayerHand();
         }
         StopUpdateDrag();
         DraggedCard = nullptr;

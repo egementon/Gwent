@@ -18,7 +18,10 @@ class GWENT_API AGW_GameMode : public AGameModeBase
 public:
 	//void CalculatePowerAllRows();
 
-	TObjectPtr<AGW_Row> PlayerDeck;
+	UPROPERTY()
+	TObjectPtr<AGW_Row> PlayerHand;
+
+	UPROPERTY()
 	TArray<AGW_Row*> RowArray;
 
 protected:

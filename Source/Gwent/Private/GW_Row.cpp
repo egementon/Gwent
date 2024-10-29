@@ -17,7 +17,7 @@ AGW_Row::AGW_Row()
 	RowBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RowBoxComponent"));
 	RowBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	
-	if (!bIsPlayerDeck)
+	if (!bIsPlayerHand)
 	{
 		TotalPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 		TotalPowerText->SetupAttachment(RowBoxComponent);
@@ -43,9 +43,9 @@ bool AGW_Row::IsSpecialSlotEmpty()
 	return bIsSpecialSlotEmpty;
 }
 
-bool AGW_Row::IsPlayerDeck()
+bool AGW_Row::IsPlayerHand()
 {
-	return bIsPlayerDeck;
+	return bIsPlayerHand;
 }
 
 void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
@@ -53,7 +53,7 @@ void AGW_Row::AddToCardsArray(AGW_CardBase* AddedCard)
 	SnappedCardsArray.AddUnique(AddedCard);
 	UpdateCardsLocations();
 
-	if (bIsPlayerDeck) return; // If it is player deck, do not calculate any power
+	if (bIsPlayerHand) return; // If it is player hand, do not calculate any power
 	UpdateAllCardsPowers();
 	CalculateRowPower();
 }
@@ -63,7 +63,7 @@ void AGW_Row::RemoveFromCardsArray(AGW_CardBase* RemovedCard)
 	SnappedCardsArray.Remove(RemovedCard);
 	UpdateCardsLocations();
 	
-	if (bIsPlayerDeck) return; // If it is player deck, do not calculate any power
+	if (bIsPlayerHand) return; // If it is player hand, do not calculate any power
 	UpdateAllCardsPowers();
 	CalculateRowPower();
 }
@@ -163,7 +163,7 @@ void AGW_Row::CalculateRowPower()
 
 bool AGW_Row::IsValidRowForCard(AGW_CardBase* Card)
 {
-	if (bIsPlayerDeck)
+	if (bIsPlayerHand)
 	{
 		return false;
 	}
@@ -232,13 +232,13 @@ void AGW_Row::OnTightBondedCardRemoved(AGW_CardBase* DestroyedCard)
 void AGW_Row::BeginPlay()
 {
 	// add self reference to GameMode
-	if (!bIsPlayerDeck)
+	if (!bIsPlayerHand)
 	{
 		Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArray.AddUnique(this);
 	}
 	else
 	{
-		Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerDeck = this;
+		Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand = this;
 	}
 }
 
