@@ -18,34 +18,15 @@ class GWENT_API AGW_PlayerController : public APlayerController
 
 public:
 	AGW_PlayerController();
-
-	// The card currently being dragged
-	UPROPERTY()
-	AGW_CardBase* DraggedCard;
-
-	// Start dragging a card
-	void StartDrag();
-
-	// Stop dragging and snap the card to the nearest row
-	void StopDrag();
-
-	// Update the card's position while dragging
-	void StartUpdateDrag();
-	void StopUpdateDrag();
-	void UpdateDrag();
+	UPROPERTY() AGW_CardBase* SelectedCard;
 
 protected:
 	virtual void SetupInputComponent() override;
-
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
-	
-	TArray<AGW_UnitRow*> RowArray;
-
-	// every frame timer for updating the card's position while dragging
-	FTimerHandle UpdateDragTimerHandle;
 
 private:
-	// Raycast to detect card under the cursor
+	void OnClicked();
 	AGW_CardBase* GetCardUnderCursor();
+	AGW_UnitRow* GetRowUnderCursor(AGW_CardBase* CardToCheck);
+
 };

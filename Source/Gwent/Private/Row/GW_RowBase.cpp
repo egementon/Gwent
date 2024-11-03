@@ -14,6 +14,7 @@ AGW_RowBase::AGW_RowBase()
 
 	RowBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RowBoxComponent"));
 	RowBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	RowBoxComponent->ComponentTags.Add(FName("RowSlot"));
 }
 
 TArray<AGW_CardBase*> AGW_RowBase::GetSnappedCardsArray()

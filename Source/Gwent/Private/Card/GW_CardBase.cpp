@@ -15,6 +15,7 @@ AGW_CardBase::AGW_CardBase()
 
 	CardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SetRootComponent(CardMesh);
+	CardMesh->SetCollisionProfileName("Card");
 	
 	CardPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	CardPowerText->SetupAttachment(CardMesh);
@@ -173,7 +174,6 @@ void AGW_CardBase::CanActivateAbility()
 
 void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivateAbility)
 {
-	HighlightCard(false);
 	OwnerRow = NewOwner;
 	bIsSnapped = true;
 
@@ -202,7 +202,6 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 
 void AGW_CardBase::DetachFromOwnerRow()
 {
-	HighlightCard(true);
 	OwnerRow->RemoveFromCardsArray(this);
 	OwnerRow = nullptr;
 	bIsSnapped = false;

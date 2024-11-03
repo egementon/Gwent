@@ -13,13 +13,18 @@
 AGW_UnitRow::AGW_UnitRow()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
+	
 	TotalPowerText = CreateDefaultSubobject<UTextRenderComponent>(TEXT("TextRenderComponent"));
 	TotalPowerText->SetupAttachment(RowBoxComponent);
 
 	SpecialSlotBoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("SpecialSlot"));
 	SpecialSlotBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SpecialSlotBoxComponent->SetupAttachment(RowBoxComponent);
+	SpecialSlotBoxComponent->ComponentTags.Add(FName("SpecialSlot"));
+
+	// enable line trace for these box components
+	RowBoxComponent->SetCollisionProfileName("Row");
+	SpecialSlotBoxComponent->SetCollisionProfileName("Row");
 }
 
 void AGW_UnitRow::BeginPlay()

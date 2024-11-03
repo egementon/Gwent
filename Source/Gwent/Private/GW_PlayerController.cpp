@@ -3,18 +3,15 @@
 
 #include "Gwent/Public/GW_PlayerController.h"
 
-#include "GW_GameMode.h"
-#include "Row/GW_PlayerHand.h"
 #include "Camera/CameraActor.h"
 #include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 
 AGW_PlayerController::AGW_PlayerController()
 {
-    DraggedCard = nullptr;
+    SelectedCard = nullptr;
     bShowMouseCursor = true;
 }
 
@@ -22,9 +19,7 @@ void AGW_PlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
     
-    // Bind input for dragging cards
-    InputComponent->BindAction("LeftClick", IE_Pressed, this, &AGW_PlayerController::StartDrag);
-    InputComponent->BindAction("LeftClick", IE_Released, this, &AGW_PlayerController::StopDrag);
+    InputComponent->BindAction("LeftClick", IE_Pressed, this, &AGW_PlayerController::OnClicked);
 }
 
 void AGW_PlayerController::BeginPlay()
@@ -39,99 +34,63 @@ void AGW_PlayerController::BeginPlay()
             PlayerController->SetViewTarget(CameraActor);
         }
     }
-
-    RowArray = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArray;
 }
 
-void AGW_PlayerController::Tick(float DeltaSeconds)
+void AGW_PlayerController::OnClicked()
 {
-}
-
-void AGW_PlayerController::StartDrag()
-{
-    // Perform a raycast to find the card under the cursor
-    DraggedCard = GetCardUnderCursor();
-    if (DraggedCard && DraggedCard->bIsSnapped)
+    if (SelectedCard)
     {
-        DraggedCard->DetachFromOwnerRow();
-        StartUpdateDrag();
+        AGW_UnitRow* SelectedRow = GetRowUnderCursor(SelectedCard);
+        
+        if (SelectedRow && SelectedRow->IsValidRowForCard(SelectedCard))
+        {
+            SelectedCard->DetachFromOwnerRow();
+            SelectedCard->SetOwnerRow(SelectedRow, true);
+        }
+        
+        SelectedCard->HighlightCard(false);
+        SelectedCard = nullptr;
+    }
+    else
+    {
+        SelectedCard = GetCardUnderCursor();
+        
+        if (SelectedCard && SelectedCard->bIsSnapped)
+        {
+            SelectedCard->HighlightCard(true);
+        }
     }
 }
 
-void AGW_PlayerController::StopDrag()
-{
-    // TODO: It should work with Collisions not distance, because rows are rectangle not uniform like sphere
-    // Snap the card to the nearest row (which is not PlayerHand) when dropping
-    if (DraggedCard)
-    {
-        FVector CardLocation = DraggedCard->GetActorLocation();
-        
-        float Distance = MAX_FLT;
-        int32 ClosestRowIndex = 0;
-        bool bFoundValidRow = false;
 
-        for (int32 i = 0; i < RowArray.Num(); i++)
+AGW_UnitRow* AGW_PlayerController::GetRowUnderCursor(AGW_CardBase* CardToCheck)
+{
+    FHitResult HitResult;
+    GetHitResultUnderCursor(ECC_GameTraceChannel2, false, HitResult); // Trace_Row channel
+    if (HitResult.GetActor()->IsValidLowLevel())
+    {
+        if (AGW_UnitRow* Row = Cast<AGW_UnitRow>(HitResult.GetActor()))
         {
-            if (RowArray[i]->IsValidRowForCard(DraggedCard))
+            // verify if the selected row section is a valid placement for the card, based on whether it is a special card
+            const bool bIsCardSpecial = CardToCheck->bIsSpecial;
+            const UPrimitiveComponent* HitComp = HitResult.GetComponent();
+            if ((!bIsCardSpecial && HitComp->ComponentHasTag(FName("RowSlot"))) || (bIsCardSpecial && HitComp->ComponentHasTag(FName("SpecialSlot"))))
             {
-                float NewDistance = FVector::Dist2D(CardLocation, RowArray[i]->GetActorLocation());
-                if (NewDistance < Distance && NewDistance < 650.f) // should be closer than 650 units to snap
-                {
-                    Distance = NewDistance;
-                    ClosestRowIndex = i;
-                    bFoundValidRow = true;
-                }
+                return Row;
             }
         }
-
-        if (bFoundValidRow)
-        {
-            DraggedCard->SetOwnerRow(RowArray[ClosestRowIndex], true);
-        }
-        else
-        {
-            AGW_PlayerHand* PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand;
-            DraggedCard->SetOwnerRow(PlayerHand, false);
-        }
-        StopUpdateDrag();
-        DraggedCard = nullptr;
     }
-}
-
-void AGW_PlayerController::StartUpdateDrag()
-{
-    // Start calling UpdateDrag() every frame (DeltaSeconds = 0.0 means every tick)
-    GetWorld()->GetTimerManager().SetTimer(UpdateDragTimerHandle, this, &AGW_PlayerController::UpdateDrag, 0.01f, true);
-}
-
-void AGW_PlayerController::StopUpdateDrag()
-{
-    // Stop the timer to stop calling UpdateDrag()
-    GetWorld()->GetTimerManager().ClearTimer(UpdateDragTimerHandle);
-}
-
-void AGW_PlayerController::UpdateDrag()
-{
-    // Update card's location to follow mouse
-    FHitResult HitResult;
-    GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
-    DraggedCard->SetActorLocation(FVector(HitResult.Location.X, HitResult.Location.Y, DraggedCard->GetActorLocation().Z));
-
-    // if (HitResult.GetActor())
-    // {
-    //     UKismetSystemLibrary::PrintString(this, FString::Printf(TEXT("HitActor: %s"), *HitResult.GetActor()->GetName()));
-    // }
-    // DrawDebugSphere(GetWorld(), HitResult.Location, 40.f, 12, FColor::Red);
+    
+    return nullptr;
 }
 
 AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
 {
     FHitResult HitResult;
-    GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
+    GetHitResultUnderCursor(ECC_GameTraceChannel1, false, HitResult); // Trace_Card channel
 
     if (HitResult.GetActor()->IsValidLowLevel())
     {
-        // Check if the hit actor is a card
         return Cast<AGW_CardBase>(HitResult.GetActor());
     }
     
