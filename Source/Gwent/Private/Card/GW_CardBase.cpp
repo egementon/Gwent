@@ -70,6 +70,11 @@ void AGW_CardBase::SetCardPower(int32 NewCardPower)
 	CardPowerText->SetTextRenderColor(PowerColor);
 }
 
+void AGW_CardBase::HighlightCard(bool bHighlight)
+{
+	CardMesh->SetRenderCustomDepth(bHighlight);
+}
+
 int32 AGW_CardBase::GetBaseCardPower() const
 {
 	return BaseCardPower;
@@ -168,6 +173,7 @@ void AGW_CardBase::CanActivateAbility()
 
 void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivateAbility)
 {
+	HighlightCard(false);
 	OwnerRow = NewOwner;
 	bIsSnapped = true;
 
@@ -196,6 +202,7 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 
 void AGW_CardBase::DetachFromOwnerRow()
 {
+	HighlightCard(true);
 	OwnerRow->RemoveFromCardsArray(this);
 	OwnerRow = nullptr;
 	bIsSnapped = false;

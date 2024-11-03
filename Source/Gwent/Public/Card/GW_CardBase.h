@@ -30,6 +30,7 @@ public:
 	int32 GetBaseCardPower() const;
 	
 	void SetCardPower(int32 NewCardPower);
+	void HighlightCard(bool bHighlight);
 
 	// Row Functions
 	void SetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility);
