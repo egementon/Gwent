@@ -7,8 +7,9 @@
 #include "GameFramework/Actor.h"
 #include "GW_CardBase.generated.h"
 
+class AGW_UnitRow;
 class UTextRenderComponent;
-class AGW_Row;
+class AGW_RowBase;
 
 UCLASS()
 class GWENT_API AGW_CardBase : public AActor
@@ -19,19 +20,20 @@ public:
 	AGW_CardBase();
 
 	// Getters
-	AGW_Row* GetOwnerRow() const;
+	AGW_RowBase* GetOwnerRow() const;
+	AGW_UnitRow* GetOwnerUnitRow() const;
+
 	FName GetCardName() const;
 	int32 GetCardPower() const;
-	ECardRowType GetCardRowType() const;
+	EUnitRowType GetCardRowType() const;
 	ECardAbility GetCardAbility() const;
 	int32 GetBaseCardPower() const;
 	
 	void SetCardPower(int32 NewCardPower);
 
 	// Row Functions
-	void SetOwnerRow(AGW_Row* NewOwner, bool bShouldActivateAbility);
+	void SetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility);
 	void DetachFromOwnerRow();
-	void SetOwnerRowAsPlayerHand();
 
 	bool bIsSnapped = false;
 	bool bIsSpecial = false; // placed on the special slot on the row
@@ -60,7 +62,7 @@ protected:
 	UTextRenderComponent* CardPowerText;
 
 	UPROPERTY()
-	AGW_Row* OwnerRow;
+	AGW_RowBase* OwnerRow;
 	
 	int32 BaseCardPower;
 	
@@ -72,7 +74,7 @@ protected:
 	int32 CardPower;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
-	ECardRowType CardRowType;
+	EUnitRowType CardRowType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	ECardAbility CardAbility;

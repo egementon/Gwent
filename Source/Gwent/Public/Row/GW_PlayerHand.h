@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GW_Row.h"
+#include "Row/GW_UnitRow.h"
 #include "GameFramework/Actor.h"
 #include "GW_PlayerHand.generated.h"
 
@@ -12,7 +12,7 @@ class AGW_CardBase;
 class UBoxComponent;
 
 UCLASS()
-class GWENT_API AGW_PlayerHand : public AGW_Row
+class GWENT_API AGW_PlayerHand : public AGW_RowBase
 {
 	GENERATED_BODY()
 
@@ -29,6 +29,5 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Data")
 	UGW_CardDataAsset* CardDataAsset;
-
 	
 };

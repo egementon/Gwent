@@ -4,13 +4,14 @@
 #include "Ability/GW_AbilityMuster.h"
 
 #include "GW_GameMode.h"
-#include "GW_Row.h"
+#include "Row/GW_PlayerHand.h"
+#include "Row/GW_UnitRow.h"
 #include "Card/GW_CardBase.h"
 
 void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 {
 	// TODO: expand it with not only hand but also deck
-	AGW_Row* PlayerHand = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->PlayerHand;
+	AGW_PlayerHand* PlayerHand = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->PlayerHand;
 	TArray<AGW_CardBase*> PlayerHandCards = PlayerHand->GetSnappedCardsArray();
 	TArray<AGW_CardBase*> SameNameDeckCards;
 	

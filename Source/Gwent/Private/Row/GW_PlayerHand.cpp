@@ -1,19 +1,14 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GW_PlayerHand.h"
+#include "Row/GW_PlayerHand.h"
 
+#include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
-#include "Components/BoxComponent.h"
-#include "Components/TextRenderComponent.h"
 
 
 AGW_PlayerHand::AGW_PlayerHand()
 {
-	bIsPlayerHand = true;
-
-	TotalPowerText->SetVisibility(false);
-	SpecialSlotBoxComponent->SetVisibility(false);
 }
 
 
@@ -53,15 +48,18 @@ void AGW_PlayerHand::GenerateRandomCards()
 		Card->InitializeCardData(SelectedCardData);
 		Card->SetOwnerRow(this, false);
 		Card->FinishSpawning(FTransform::Identity);
-		SnappedCardsArray.AddUnique(Card);
 	}
 
 	UpdateCardsLocations();
 }
 
+
 void AGW_PlayerHand::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// add self reference to GameMode
+	Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand = this;
 	
 	GenerateRandomCards();
 }

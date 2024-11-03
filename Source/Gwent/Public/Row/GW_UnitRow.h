@@ -3,40 +3,39 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "GW_Row.generated.h"
+#include "Row/GW_RowBase.h"
+#include "GW_UnitRow.generated.h"
 
-enum class ECardRowType : uint8;
+enum class EUnitRowType : uint8;
 class UTextRenderComponent;
 class AGW_CardBase;
 class UBoxComponent;
 
 UCLASS()
-class GWENT_API AGW_Row : public AActor
+class GWENT_API AGW_UnitRow : public AGW_RowBase
 {
 	GENERATED_BODY()
 
 public:
-	AGW_Row();
+	AGW_UnitRow();
 
 	// Getters
-	TArray<AGW_CardBase*> GetSnappedCardsArray();
 	AGW_CardBase* GetSnappedSpecialCard();
 	bool IsSpecialSlotEmpty();
-	bool IsPlayerHand();
-	
+
 	// Setters
 	void SetSpecialCard(AGW_CardBase* SpecialCard);
 	void SetSpecialSlotEmpty(bool bIsEmpty);
 	
-	void AddToCardsArray(AGW_CardBase* AddedCard);
-	void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
-	void UpdateAllCardsPowers();
+	void UpdateAllCardsPowers(); 
 	void CalculateRowPower();
 	bool IsValidRowForCard(AGW_CardBase* Card);
 	
+	virtual void AddToCardsArray(AGW_CardBase* AddedCard) override;
+	virtual void RemoveFromCardsArray(AGW_CardBase* RemovedCard) override;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECardRowType RowType;
+	EUnitRowType RowType;
 	
 	// Card power calculation parameters in row
 	bool bRowHasBadWeather = false;
@@ -51,27 +50,15 @@ protected:
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UBoxComponent* RowBoxComponent;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* SpecialSlotBoxComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UTextRenderComponent* TotalPowerText;
 
-	UPROPERTY(BlueprintReadOnly)
-	TArray<AGW_CardBase*> SnappedCardsArray;
-
-	UPROPERTY()
-	AGW_CardBase* SnappedSpecialCard;
-
 	void SetCardPowerParameters(AGW_CardBase* AddedCard);
-	void UpdateCardsLocations();
 	
+	UPROPERTY() AGW_CardBase* SnappedSpecialCard;
 	int32 TotalPower;
-
-	bool bIsPlayerHand = false;
 	bool bIsSpecialSlotEmpty = true;
-
 	
 };

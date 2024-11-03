@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GW_PlayerController.generated.h"
 
-class AGW_Row;
+class AGW_UnitRow;
 class AGW_CardBase;
 /**
  * 
@@ -40,12 +40,10 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
 	
-	TArray<AGW_Row*> RowArray;
+	TArray<AGW_UnitRow*> RowArray;
 
 	// every frame timer for updating the card's position while dragging
 	FTimerHandle UpdateDragTimerHandle;
-
-
 
 private:
 	// Raycast to detect card under the cursor

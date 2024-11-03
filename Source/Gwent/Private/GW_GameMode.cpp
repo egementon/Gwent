@@ -3,8 +3,6 @@
 
 #include "Gwent/Public/GW_GameMode.h"
 
-#include "GW_Row.h"
-#include "Kismet/GameplayStatics.h"
 
 void AGW_GameMode::BeginPlay()
 {
@@ -12,7 +10,7 @@ void AGW_GameMode::BeginPlay()
 
 // void AGW_GameMode::CalculatePowerAllRows()
 // {
-// 	for (AGW_Row* Row : RowArray)
+// 	for (AGW_UnitRow* Row : RowArray)
 // 	{
 // 		Row->CalculateRowPower();
 // 	}

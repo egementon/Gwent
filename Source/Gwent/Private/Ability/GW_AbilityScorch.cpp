@@ -4,7 +4,7 @@
 #include "Ability/GW_AbilityScorch.h"
 
 #include "GW_GameMode.h"
-#include "GW_Row.h"
+#include "Row/GW_UnitRow.h"
 #include "Card/GW_CardBase.h"
 
 void UGW_AbilityScorch::ActivateAbility(AGW_CardBase* Card)
@@ -12,7 +12,7 @@ void UGW_AbilityScorch::ActivateAbility(AGW_CardBase* Card)
 	int32 HighestCardPower = 0;
 	TArray<AGW_CardBase*> HighestCardsArray;
 
-	TArray<AGW_Row*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->RowArray;
+	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->RowArray;
 	for (int i = 0; i < RowArray.Num(); ++i)
 	{
 		TArray<AGW_CardBase*> RowCards = RowArray[i]->GetSnappedCardsArray();

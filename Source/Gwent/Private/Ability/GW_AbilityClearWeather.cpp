@@ -4,14 +4,14 @@
 #include "Ability/GW_AbilityClearWeather.h"
 
 #include "GW_GameMode.h"
-#include "GW_Row.h"
+#include "Row/GW_UnitRow.h"
 #include "Card/GW_CardBase.h"
 #include "GameFramework/GameModeBase.h"
 
 void UGW_AbilityClearWeather::ActivateAbility(AGW_CardBase* Card)
 {
 	// remove Bad Weather cards from all rows and destroy them
-	TArray<AGW_Row*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->RowArray;
+	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->RowArray;
 
 	for (int i = 0; i < RowArray.Num(); ++i)
 	{

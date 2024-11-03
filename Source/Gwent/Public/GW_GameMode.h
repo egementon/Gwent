@@ -6,7 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "GW_GameMode.generated.h"
 
-class AGW_Row;
+class AGW_PlayerHand;
+class AGW_UnitRow;
 /**
  * 
  */
@@ -19,10 +20,10 @@ public:
 	//void CalculatePowerAllRows();
 
 	UPROPERTY()
-	TObjectPtr<AGW_Row> PlayerHand;
+	TObjectPtr<AGW_PlayerHand> PlayerHand;
 
 	UPROPERTY()
-	TArray<AGW_Row*> RowArray;
+	TArray<AGW_UnitRow*> RowArray;
 
 protected:
 	virtual void BeginPlay() override;

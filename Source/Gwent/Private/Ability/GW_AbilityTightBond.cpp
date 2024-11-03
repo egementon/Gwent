@@ -3,12 +3,12 @@
 
 #include "Ability/GW_AbilityTightBond.h"
 
-#include "GW_Row.h"
+#include "Row/GW_UnitRow.h"
 #include "Card/GW_CardBase.h"
 
 void UGW_AbilityTightBond::ActivateAbility(AGW_CardBase* Card)
 {
 	// Add card to the tight-bonded array for its name
-	TArray<AGW_CardBase*>& BondedArray = Card->GetOwnerRow()->TightBondedCards.FindOrAdd(Card->GetCardName());
+	TArray<AGW_CardBase*>& BondedArray = Card->GetOwnerUnitRow()->TightBondedCards.FindOrAdd(Card->GetCardName());
 	BondedArray.Add(Card);
 }

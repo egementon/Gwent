@@ -4,9 +4,9 @@
 #include "Ability/GW_AbilityMoraleBoost.h"
 
 #include "Card/GW_CardBase.h"
-#include "GW_Row.h"
+#include "Row/GW_UnitRow.h"
 
 void UGW_Ability_MoraleBoost::ActivateAbility(AGW_CardBase* Card)
 {
-	Card->GetOwnerRow()->RowMoraleBoostAddition++;
+	Card->GetOwnerUnitRow()->RowMoraleBoostAddition++;
 }

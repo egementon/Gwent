@@ -2,13 +2,10 @@
 
 
 #include "Gwent/Public/Card/GW_CardBase.h"
-
-#include "GW_GameMode.h"
-#include "GW_Row.h"
 #include "Ability/Core/GW_AbilityBase.h"
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
+#include "Row/GW_UnitRow.h"
 
 
 // Sets default values
@@ -26,9 +23,14 @@ AGW_CardBase::AGW_CardBase()
 	CardPowerText->SetTextRenderColor(FColor::Black);
 }
 
-AGW_Row* AGW_CardBase::GetOwnerRow() const
+AGW_RowBase* AGW_CardBase::GetOwnerRow() const
 {
 	return OwnerRow;
+}
+
+AGW_UnitRow* AGW_CardBase::GetOwnerUnitRow() const
+{
+	return Cast<AGW_UnitRow>(OwnerRow);
 }
 
 FName AGW_CardBase::GetCardName() const
@@ -41,7 +43,7 @@ int32 AGW_CardBase::GetCardPower() const
 	return CardPower;
 }
 
-ECardRowType AGW_CardBase::GetCardRowType() const
+EUnitRowType AGW_CardBase::GetCardRowType() const
 {
 	return CardRowType;
 }
@@ -87,33 +89,35 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 
 void AGW_CardBase::DestroySelf()
 {
-	// card specific destroy events
-	if (CardAbility == ECardAbility::MoraleBoost)
+	// if card is on a UnitRow
+	if (AGW_UnitRow* Row = Cast<AGW_UnitRow>(GetOwnerRow()))
 	{
-		GetOwnerRow()->RowMoraleBoostAddition--;
-		GetOwnerRow()->UpdateAllCardsPowers();
+		// card specific destroy events
+		if (CardAbility == ECardAbility::MoraleBoost)
+		{
+			Row->RowMoraleBoostAddition--;
+			Row->UpdateAllCardsPowers();
+		}
+		if (CardAbility == ECardAbility::TightBond)
+		{
+			Row->OnTightBondedCardRemoved(this);
+			Row->UpdateAllCardsPowers();
+		}
+		if (CardAbility == ECardAbility::BadWeather)
+		{
+			Row->bRowHasBadWeather = false;
+			Row->UpdateAllCardsPowers();
+		}
+		
+		// if special card destroyed from UnitRow
+		if (bIsSpecial)
+		{
+			Row->SetSpecialCard(nullptr);
+			Row->SetSpecialSlotEmpty(true);
+		}
 	}
-	if (CardAbility == ECardAbility::TightBond)
-	{
-		GetOwnerRow()->OnTightBondedCardRemoved(this);
-		GetOwnerRow()->UpdateAllCardsPowers();
-	}
-	if (CardAbility == ECardAbility::BadWeather)
-	{
-		GetOwnerRow()->bRowHasBadWeather = false;
-		GetOwnerRow()->UpdateAllCardsPowers();
-	}
-
-	// general destroy events
-	if (bIsSpecial)
-	{
-		OwnerRow->SetSpecialCard(nullptr);
-		OwnerRow->SetSpecialSlotEmpty(true);
-	}
-	else
-	{
-		OwnerRow->RemoveFromCardsArray(this);
-	}
+	
+	OwnerRow->RemoveFromCardsArray(this);
 	
 	Destroy();
 }
@@ -162,22 +166,29 @@ void AGW_CardBase::CanActivateAbility()
 	}
 }
 
-void AGW_CardBase::SetOwnerRow(AGW_Row* NewOwner, const bool bShouldActivateAbility)
+void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivateAbility)
 {
 	OwnerRow = NewOwner;
 	bIsSnapped = true;
 
-	// try to activate card ability
-	if (bShouldActivateAbility)
+	if (Cast<AGW_UnitRow>(NewOwner)) // if NewOwner is UnitRow
 	{
-		CanActivateAbility();
+		// try to activate card ability
+		if (bShouldActivateAbility)
+		{
+			CanActivateAbility();
+		}
+		
+		if (bIsSpecial)
+		{
+			Cast<AGW_UnitRow>(NewOwner)->SetSpecialCard(this);
+		}
+		else
+		{
+			NewOwner->AddToCardsArray(this);
+		}
 	}
-	
-	if (bIsSpecial)
-	{
-		NewOwner->SetSpecialCard(this);
-	}
-	else
+	else // if NewOwner is PlayerHand
 	{
 		NewOwner->AddToCardsArray(this);
 	}
@@ -188,14 +199,6 @@ void AGW_CardBase::DetachFromOwnerRow()
 	OwnerRow->RemoveFromCardsArray(this);
 	OwnerRow = nullptr;
 	bIsSnapped = false;
-}
-
-void AGW_CardBase::SetOwnerRowAsPlayerHand()
-{
-	AGW_Row* PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand;
-	PlayerHand->AddToCardsArray(this);
-	OwnerRow = PlayerHand;
-	bIsSnapped = true;
 }
 
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

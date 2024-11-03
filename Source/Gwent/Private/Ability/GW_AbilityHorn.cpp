@@ -3,10 +3,10 @@
 
 #include "Ability/GW_AbilityHorn.h"
 
-#include "GW_Row.h"
+#include "Row/GW_UnitRow.h"
 #include "Card/GW_CardBase.h"
 
 void UGW_AbilityHorn::ActivateAbility(AGW_CardBase* Card)
 {
-	Card->GetOwnerRow()->bRowHasHorn = true;
+	Card->GetOwnerUnitRow()->bRowHasHorn = true;
 }

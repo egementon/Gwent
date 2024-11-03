@@ -8,7 +8,7 @@
 
 
 UENUM(BlueprintType)
-enum class ECardRowType : uint8
+enum class EUnitRowType : uint8
 {
 	// can be placed only on Melee row.
 	Melee   UMETA(DisplayName = "Melee"),
@@ -56,7 +56,7 @@ struct FCardData
 	int32 Power = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	ECardRowType RowType = ECardRowType::Melee;
+	EUnitRowType RowType = EUnitRowType::Melee;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	bool bIsSpecial = false;

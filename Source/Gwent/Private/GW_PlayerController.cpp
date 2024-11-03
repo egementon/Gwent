@@ -4,8 +4,9 @@
 #include "Gwent/Public/GW_PlayerController.h"
 
 #include "GW_GameMode.h"
+#include "Row/GW_PlayerHand.h"
 #include "Camera/CameraActor.h"
-#include "Gwent/Public/GW_Row.h"
+#include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -89,7 +90,8 @@ void AGW_PlayerController::StopDrag()
         }
         else
         {
-            DraggedCard->SetOwnerRowAsPlayerHand();
+            AGW_PlayerHand* PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand;
+            DraggedCard->SetOwnerRow(PlayerHand, false);
         }
         StopUpdateDrag();
         DraggedCard = nullptr;
