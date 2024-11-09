@@ -29,6 +29,8 @@ AGW_UnitRow::AGW_UnitRow()
 
 void AGW_UnitRow::BeginPlay()
 {
+	Super::BeginPlay();
+	
 	// add self reference to GameMode
 	Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArray.AddUnique(this);
 }

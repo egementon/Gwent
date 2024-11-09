@@ -93,7 +93,13 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
 
     if (HitResult.GetActor()->IsValidLowLevel())
     {
-        return Cast<AGW_CardBase>(HitResult.GetActor());
+        if (AGW_CardBase* CardUnderCursor = Cast<AGW_CardBase>(HitResult.GetActor()))
+        {
+            if (!CardUnderCursor->GetIsDead())
+            {
+                return CardUnderCursor;
+            }
+        }
     }
     
     return nullptr;

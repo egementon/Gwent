@@ -6,6 +6,7 @@
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Row/GW_Graveyard.h"
 #include "Row/GW_UnitRow.h"
 
 
@@ -82,6 +83,11 @@ int32 AGW_CardBase::GetBaseCardPower() const
 	return BaseCardPower;
 }
 
+bool AGW_CardBase::GetIsDead()
+{
+	return bIsDead;
+}
+
 void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 {
 	CardName = NewCardData.Name;
@@ -127,7 +133,8 @@ void AGW_CardBase::DestroySelf()
 	
 	OwnerRow->RemoveFromCardsArray(this);
 	
-	Destroy();
+	SetOwnerRow(Graveyard, false);
+	bIsDead = true;
 }
 
 void AGW_CardBase::DestroySelfAfterDelay(const float Delay)
@@ -152,7 +159,7 @@ void AGW_CardBase::BeginPlay()
 	}
 
 	// Card Power is already written in Hero Cards. Also some cards do not have any power to be written (0)
-	if (CardPower == 0 || bIsHero)
+	if (CardPower == 0 || bIsHero) //TODO: create a new boolean for Powerless cards instead of giving them 0 power
 	{
 		CardPowerText->SetVisibility(false);
 	}

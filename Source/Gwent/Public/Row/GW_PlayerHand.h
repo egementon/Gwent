@@ -18,6 +18,8 @@ class GWENT_API AGW_PlayerHand : public AGW_RowBase
 
 public:
 	AGW_PlayerHand();
+	
+	void GenerateRandomCards();
 
 protected:
 	virtual void BeginPlay() override;
@@ -25,8 +27,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AGW_CardBase> CardClass; 
 	
-	void GenerateRandomCards();
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Card Data")
 	UGW_CardDataAsset* CardDataAsset;
 	

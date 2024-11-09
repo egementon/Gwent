@@ -33,4 +33,9 @@ protected:
 
 	void UpdateCardsLocations();
 
+	float CardSpacingX = 107.f; // default for PlayerHand and UnitRows
+	float CardSpacingZ = 1.f;
+	bool bVerticalOffset = false;// true for Graveyard and Deck
+
+
 };

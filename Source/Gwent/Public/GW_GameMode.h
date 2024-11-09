@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GW_GameMode.generated.h"
 
+class AGW_Graveyard;
 class AGW_PlayerHand;
 class AGW_UnitRow;
 /**
@@ -17,11 +18,14 @@ class GWENT_API AGW_GameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	//void CalculatePowerAllRows();
+	void SetGraveyard(AGW_Graveyard* NewGraveyard);
 
 	UPROPERTY()
 	TObjectPtr<AGW_PlayerHand> PlayerHand;
 
+	UPROPERTY()
+	TObjectPtr<AGW_Graveyard> Graveyard;
+	
 	UPROPERTY()
 	TArray<AGW_UnitRow*> RowArray;
 

@@ -36,6 +36,8 @@ void AGW_PlayerHand::GenerateRandomCards()
 		UE_LOG(LogTemp, Warning, TEXT("No suitable card."));
 		return;
 	}
+
+	AGW_Graveyard* Graveyard = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->Graveyard;
 	
 	for (int i = 0; i < 10; ++i)
 	{
@@ -47,6 +49,7 @@ void AGW_PlayerHand::GenerateRandomCards()
 		auto Card = GetWorld()->SpawnActorDeferred<AGW_CardBase>(CardClass, FTransform::Identity);
 		Card->InitializeCardData(SelectedCardData);
 		Card->SetOwnerRow(this, false);
+		Card->Graveyard = Graveyard;
 		Card->FinishSpawning(FTransform::Identity);
 	}
 
@@ -60,8 +63,6 @@ void AGW_PlayerHand::BeginPlay()
 
 	// add self reference to GameMode
 	Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand = this;
-	
-	GenerateRandomCards();
 }
 
 

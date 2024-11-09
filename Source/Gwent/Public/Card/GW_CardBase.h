@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_CardBase.generated.h"
 
+class AGW_Graveyard;
 class AGW_UnitRow;
 class UTextRenderComponent;
 class AGW_RowBase;
@@ -28,6 +29,7 @@ public:
 	EUnitRowType GetCardRowType() const;
 	ECardAbility GetCardAbility() const;
 	int32 GetBaseCardPower() const;
+	bool GetIsDead();
 	
 	void SetCardPower(int32 NewCardPower);
 	void HighlightCard(bool bHighlight);
@@ -50,6 +52,8 @@ public:
 	int32 TightBondMultiplier = 1;
 	int32 MoraleBoost = 0;
 	void CalculatePower();
+
+	UPROPERTY() AGW_Graveyard* Graveyard;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -66,6 +70,8 @@ protected:
 	AGW_RowBase* OwnerRow;
 	
 	int32 BaseCardPower;
+
+	bool bIsDead = false; // (i.e. InGraveyard)
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")

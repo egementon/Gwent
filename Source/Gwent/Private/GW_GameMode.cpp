@@ -3,15 +3,19 @@
 
 #include "Gwent/Public/GW_GameMode.h"
 
+#include "Row/GW_PlayerHand.h"
+
+
+void AGW_GameMode::SetGraveyard(AGW_Graveyard* NewGraveyard)
+{
+	Graveyard = NewGraveyard;
+	if (PlayerHand)
+	{
+		PlayerHand->GenerateRandomCards();
+	}
+}
 
 void AGW_GameMode::BeginPlay()
 {
+	Super::BeginPlay();
 }
-
-// void AGW_GameMode::CalculatePowerAllRows()
-// {
-// 	for (AGW_UnitRow* Row : RowArray)
-// 	{
-// 		Row->CalculateRowPower();
-// 	}
-// }

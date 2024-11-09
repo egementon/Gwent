@@ -39,11 +39,10 @@ void AGW_RowBase::UpdateCardsLocations()
 	int32 NumCards = SnappedCardsArray.Num();
 	if (NumCards < 1) return;
 
-	float CardSpacing = 107.f;
 	FVector RowCenter = GetActorLocation();
 	
 	// Calculate starting position (center minus half of the total width of all cards)
-	float TotalWidth = (NumCards - 1) * CardSpacing; // Total width including spacing
+	float TotalWidth = (NumCards - 1) * CardSpacingX; // Total width including spacing
 	FVector StartPosition = RowCenter - FVector(TotalWidth / 2.0f, 0, 0); // Adjust X axis
 
 	// Loop through each card and position them accordingly.
@@ -51,8 +50,22 @@ void AGW_RowBase::UpdateCardsLocations()
 	{
 		if (SnappedCardsArray[i])
 		{
-			FVector NewPosition = StartPosition + FVector(i * CardSpacing, 0, 0);
+			FVector NewPosition = StartPosition + FVector(i * CardSpacingX, 0, 0);
 			SnappedCardsArray[i]->SetActorLocation(NewPosition);
+		}
+	}
+
+	// Apply vertical offset if bVerticalOffset is true
+	if (bVerticalOffset)
+	{
+		for (int32 i = 0; i < NumCards; i++)
+		{
+			if (SnappedCardsArray[i])
+			{
+				FVector CurrentPosition = SnappedCardsArray[i]->GetActorLocation();
+				FVector VerticalPosition = CurrentPosition + FVector(0, 0, i * CardSpacingZ);
+				SnappedCardsArray[i]->SetActorLocation(VerticalPosition);
+			}
 		}
 	}
 }
