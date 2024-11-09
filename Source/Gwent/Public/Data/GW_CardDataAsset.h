@@ -71,6 +71,9 @@ struct FCardData
 	UTexture2D* Image = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	USoundBase* SFX = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	bool bDebug_ExcludeFromDeck = false;
 
 };

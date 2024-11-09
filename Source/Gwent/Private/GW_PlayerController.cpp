@@ -60,6 +60,8 @@ void AGW_PlayerController::OnClicked()
             SelectedCard->HighlightCard(true);
         }
     }
+
+    UGameplayStatics::PlaySound2D(this, ClickSFX);
 }
 
 

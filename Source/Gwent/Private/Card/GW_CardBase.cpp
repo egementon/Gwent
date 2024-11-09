@@ -5,6 +5,7 @@
 #include "Ability/Core/GW_AbilityBase.h"
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Row/GW_UnitRow.h"
 
 
@@ -90,6 +91,7 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 	bIsHero = NewCardData.bIsHero;
 	CardAbility = NewCardData.Ability;
 	CardImage = NewCardData.Image;
+	CardSFX = NewCardData.SFX;
 	BaseCardPower = CardPower;
 }
 
@@ -183,6 +185,11 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 		if (bShouldActivateAbility)
 		{
 			CanActivateAbility();
+		}
+		// play card SFX
+		if (CardSFX)
+		{
+			UGameplayStatics::PlaySound2D(this, CardSFX);
 		}
 		
 		if (bIsSpecial)

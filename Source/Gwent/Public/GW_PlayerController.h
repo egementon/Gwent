@@ -23,6 +23,9 @@ public:
 protected:
 	virtual void SetupInputComponent() override;
 	virtual void BeginPlay() override;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USoundBase* ClickSFX;
 
 private:
 	void OnClicked();

@@ -82,6 +82,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	UTexture2D* CardImage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	USoundBase* CardSFX;
 	
 private:
 	// for editor
