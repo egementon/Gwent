@@ -73,6 +73,11 @@ void AGW_CardBase::SetCardPower(int32 NewCardPower)
 	CardPowerText->SetTextRenderColor(PowerColor);
 }
 
+void AGW_CardBase::SetIsDead(bool bNewIsDead)
+{
+	bIsDead = bNewIsDead;
+}
+
 void AGW_CardBase::HighlightCard(bool bHighlight)
 {
 	CardMesh->SetRenderCustomDepth(bHighlight);

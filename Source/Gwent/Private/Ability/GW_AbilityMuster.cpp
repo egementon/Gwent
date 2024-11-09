@@ -5,17 +5,24 @@
 
 #include "GW_GameMode.h"
 #include "Row/GW_PlayerHand.h"
-#include "Row/GW_UnitRow.h"
 #include "Card/GW_CardBase.h"
+#include "Row/GW_Deck.h"
 
 void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 {
-	// TODO: expand it with not only hand but also deck
-	AGW_PlayerHand* PlayerHand = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->PlayerHand;
-	TArray<AGW_CardBase*> PlayerHandCards = PlayerHand->GetSnappedCardsArray();
-	TArray<AGW_CardBase*> SameNameDeckCards;
+	const AGW_GameMode* GameMode = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode());
+
+	// get all of the player cards
+	AGW_PlayerHand* PlayerHand = GameMode->PlayerHand;
+	AGW_Deck* Deck = GameMode->Deck;
 	
-	for (AGW_CardBase* DeckCard : PlayerHandCards)
+	TArray<AGW_CardBase*> AllPlayerCards = PlayerHand->GetSnappedCardsArray();
+	AllPlayerCards.Append(Deck->GetSnappedCardsArray());
+
+	TArray<AGW_CardBase*> SameNameDeckCards;
+
+	// check for same name cards
+	for (AGW_CardBase* DeckCard : AllPlayerCards)
 	{
 		if (Card->GetCardName() == DeckCard->GetCardName())
 		{

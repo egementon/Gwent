@@ -3,8 +3,6 @@
 
 #include "Row/GW_Graveyard.h"
 
-#include "GW_GameMode.h"
-
 
 AGW_Graveyard::AGW_Graveyard()
 {
@@ -17,9 +15,4 @@ AGW_Graveyard::AGW_Graveyard()
 void AGW_Graveyard::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// add self reference to GameMode
-	Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->SetGraveyard(this);
 }
-
-

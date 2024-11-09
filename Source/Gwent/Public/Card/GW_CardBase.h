@@ -32,6 +32,7 @@ public:
 	bool GetIsDead();
 	
 	void SetCardPower(int32 NewCardPower);
+	void SetIsDead(bool bNewIsDead);
 	void HighlightCard(bool bHighlight);
 
 	// Row Functions
@@ -71,7 +72,7 @@ protected:
 	
 	int32 BaseCardPower;
 
-	bool bIsDead = false; // (i.e. InGraveyard)
+	bool bIsDead = true; // (i.e. in Graveyard or Deck)
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")

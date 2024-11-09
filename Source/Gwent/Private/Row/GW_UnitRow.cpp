@@ -2,8 +2,6 @@
 
 
 #include "Row/GW_UnitRow.h"
-
-#include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -30,9 +28,6 @@ AGW_UnitRow::AGW_UnitRow()
 void AGW_UnitRow::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	// add self reference to GameMode
-	Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArray.AddUnique(this);
 }
 
 AGW_CardBase* AGW_UnitRow::GetSnappedSpecialCard()

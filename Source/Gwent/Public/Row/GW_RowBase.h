@@ -24,6 +24,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void PostInitializeComponents() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* RowBoxComponent;
@@ -36,6 +37,5 @@ protected:
 	float CardSpacingX = 107.f; // default for PlayerHand and UnitRows
 	float CardSpacingZ = 1.f;
 	bool bVerticalOffset = false;// true for Graveyard and Deck
-
-
+	
 };
