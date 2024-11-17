@@ -3,6 +3,7 @@
 
 #include "Gwent/Public/GW_PlayerController.h"
 
+#include "GW_FuncLib.h"
 #include "Camera/CameraActor.h"
 #include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
@@ -38,6 +39,13 @@ void AGW_PlayerController::BeginPlay()
 
 void AGW_PlayerController::OnClicked()
 {
+    UGameplayStatics::PlaySound2D(this, ClickSFX);
+
+    if (!UGW_FuncLib::CheckIsPlayerIDTurn(GetWorld(), PlayerControllerID))
+    {
+        return;
+    }
+    
     if (SelectedCard)
     {
         AGW_UnitRow* SelectedRow = GetRowUnderCursor(SelectedCard);
@@ -60,8 +68,6 @@ void AGW_PlayerController::OnClicked()
             SelectedCard->HighlightCard(true);
         }
     }
-
-    UGameplayStatics::PlaySound2D(this, ClickSFX);
 }
 
 
@@ -95,7 +101,8 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
     {
         if (AGW_CardBase* CardUnderCursor = Cast<AGW_CardBase>(HitResult.GetActor()))
         {
-            if (!CardUnderCursor->GetIsDead())
+            // can only select same ID cards and cards that are not in the graveyard or deck
+            if (PlayerControllerID == CardUnderCursor->PlayerID && !CardUnderCursor->GetIsDead())
             {
                 return CardUnderCursor;
             }

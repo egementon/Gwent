@@ -11,7 +11,7 @@
 void UGW_AbilityClearWeather::ActivateAbility(AGW_CardBase* Card)
 {
 	// remove Bad Weather cards from all rows and destroy them
-	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->RowArray;
+	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->AllRowsArray;
 
 	for (int i = 0; i < RowArray.Num(); ++i)
 	{

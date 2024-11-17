@@ -130,6 +130,12 @@ void AGW_UnitRow::CalculateRowPower()
 
 bool AGW_UnitRow::IsValidRowForCard(AGW_CardBase* Card)
 {
+	//TODO: Spy cards should be placeable on opponent rows
+	if (GetPlayerID() != Card->PlayerID) 
+	{
+		return false;
+	}
+	
 	if (Card->bIsSpecial && !bIsSpecialSlotEmpty)
 	{
 		return false;

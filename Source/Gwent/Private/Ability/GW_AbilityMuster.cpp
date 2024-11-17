@@ -13,8 +13,18 @@ void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 	const AGW_GameMode* GameMode = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode());
 
 	// get all of the player cards
-	AGW_PlayerHand* PlayerHand = GameMode->PlayerHand;
-	AGW_Deck* Deck = GameMode->Deck;
+	AGW_PlayerHand* PlayerHand;
+	AGW_Deck* Deck;
+	if (Card->PlayerID == EPlayerID::Player1)
+	{
+		PlayerHand = GameMode->PlayerHandP1;
+		Deck = GameMode->DeckP1;
+	}
+	else
+	{
+		PlayerHand = GameMode->PlayerHandP2;
+		Deck = GameMode->DeckP2;
+	}
 	
 	TArray<AGW_CardBase*> AllPlayerCards = PlayerHand->GetSnappedCardsArray();
 	AllPlayerCards.Append(Deck->GetSnappedCardsArray());

@@ -12,7 +12,7 @@ void UGW_AbilityScorch::ActivateAbility(AGW_CardBase* Card)
 	int32 HighestCardPower = 0;
 	TArray<AGW_CardBase*> HighestCardsArray;
 
-	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->RowArray;
+	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(Card->GetWorld()->GetAuthGameMode())->AllRowsArray;
 	for (int i = 0; i < RowArray.Num(); ++i)
 	{
 		TArray<AGW_CardBase*> RowCards = RowArray[i]->GetSnappedCardsArray();

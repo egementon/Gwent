@@ -25,7 +25,16 @@ void AGW_Deck::BeginPlay()
 
 void AGW_Deck::GiveRandomCardsToHand()
 {
-	AGW_PlayerHand* PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHand;
+	AGW_PlayerHand* PlayerHand;
+	if (GetPlayerID() == EPlayerID::Player1)
+	{
+		PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHandP1;
+	}
+	else
+	{
+		PlayerHand = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHandP2;
+	}
+	
 	for (int i = 0; i < 10; ++i)
 	{
 		const int32 RandomIndex = FMath::RandRange(0, SnappedCardsArray.Num() - 1);

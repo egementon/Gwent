@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GW_Types.h"
 #include "GameFramework/GameModeBase.h"
 #include "GW_GameMode.generated.h"
 
@@ -23,12 +24,22 @@ class GWENT_API AGW_GameMode : public AGameModeBase
 
 public:
 	void RegisterRow(AGW_RowBase* NewRow);
+	EPlayerID GetWhoseTurn();
 
 	// Row references
-	UPROPERTY() TArray<AGW_UnitRow*> RowArray;
-	UPROPERTY() TObjectPtr<AGW_Deck> Deck;
-	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHand;
-	UPROPERTY() TObjectPtr<AGW_Graveyard> Graveyard;
+	UPROPERTY() TArray<AGW_UnitRow*> RowArrayP1;
+	UPROPERTY() TObjectPtr<AGW_Deck> DeckP1;
+	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHandP1;
+	UPROPERTY() TObjectPtr<AGW_Graveyard> GraveyardP1;
+
+	UPROPERTY() TArray<AGW_UnitRow*> RowArrayP2;
+	UPROPERTY() TObjectPtr<AGW_Deck> DeckP2;
+	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHandP2;
+	UPROPERTY() TObjectPtr<AGW_Graveyard> GraveyardP2;
+
+	UPROPERTY() TArray<AGW_UnitRow*> AllRowsArray;
+
+	
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,6 +52,8 @@ protected:
 	UGW_CardDataAsset* CardDataAsset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 DeckSize = 15; 
+	int32 DeckSize = 15;
+	
+	EPlayerID WhoseTurn = EPlayerID::Player1; // default of this is the starting player
 
 };

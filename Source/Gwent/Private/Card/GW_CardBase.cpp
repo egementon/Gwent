@@ -189,6 +189,7 @@ void AGW_CardBase::CanActivateAbility()
 void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivateAbility)
 {
 	OwnerRow = NewOwner;
+	PlayerID = NewOwner->GetPlayerID();
 	bIsSnapped = true;
 
 	if (Cast<AGW_UnitRow>(NewOwner)) // if NewOwner is UnitRow

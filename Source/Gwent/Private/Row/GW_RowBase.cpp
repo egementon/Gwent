@@ -22,6 +22,11 @@ TArray<AGW_CardBase*> AGW_RowBase::GetSnappedCardsArray()
 	return SnappedCardsArray;
 }
 
+EPlayerID AGW_RowBase::GetPlayerID()
+{
+	return PlayerID;
+}
+
 void AGW_RowBase::AddToCardsArray(AGW_CardBase* AddedCard)
 {
 	SnappedCardsArray.AddUnique(AddedCard);

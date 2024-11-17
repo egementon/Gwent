@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GW_Types.h"
 #include "GameFramework/Actor.h"
 #include "GW_RowBase.generated.h"
 
@@ -18,7 +19,8 @@ public:
 	AGW_RowBase();
 
 	TArray<AGW_CardBase*> GetSnappedCardsArray();
-
+	EPlayerID GetPlayerID();
+	
 	virtual void AddToCardsArray(AGW_CardBase* AddedCard);
 	virtual void RemoveFromCardsArray(AGW_CardBase* RemovedCard);
 
@@ -37,5 +39,9 @@ protected:
 	float CardSpacingX = 107.f; // default for PlayerHand and UnitRows
 	float CardSpacingZ = 1.f;
 	bool bVerticalOffset = false;// true for Graveyard and Deck
+
+	// PlayerID of the side which the Row belongs
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EPlayerID PlayerID = EPlayerID::Player1;
 	
 };

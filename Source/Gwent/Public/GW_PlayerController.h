@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GW_Types.h"
 #include "GameFramework/PlayerController.h"
 #include "GW_PlayerController.generated.h"
 
@@ -26,6 +27,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USoundBase* ClickSFX;
+
+	// ID is always Player1 for single-player mode
+	EPlayerID PlayerControllerID = EPlayerID::Player1;
 
 private:
 	void OnClicked();

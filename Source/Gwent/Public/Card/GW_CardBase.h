@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GW_Types.h"
 #include "Data/GW_CardDataAsset.h"
 #include "GameFramework/Actor.h"
 #include "GW_CardBase.generated.h"
@@ -55,6 +56,8 @@ public:
 	void CalculatePower();
 
 	UPROPERTY() AGW_Graveyard* Graveyard;
+	EPlayerID PlayerID; // Card Owner's PlayerID
+	
 	
 protected:
 	virtual void BeginPlay() override;
