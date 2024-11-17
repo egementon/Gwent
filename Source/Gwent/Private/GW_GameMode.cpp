@@ -3,6 +3,7 @@
 
 #include "Gwent/Public/GW_GameMode.h"
 
+#include "GW_AIController.h"
 #include "Card/GW_CardBase.h"
 #include "Data/GW_CardDataAsset.h"
 #include "Row/GW_Deck.h"
@@ -72,6 +73,17 @@ void AGW_GameMode::BeginPlay()
 	AllRowsArray.Append(RowArrayP2);
 	
 	GenerateRandomCardsForDeck();
+
+	if (bSpawnAIController)
+	{
+		const FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector);
+		AGW_AIController* AIController = GetWorld()->SpawnActorDeferred<AGW_AIController>(
+			AGW_AIController::StaticClass(),
+			SpawnTransform);
+		
+		AIController->WaitDuration = AIWaitDuration;
+		AIController->FinishSpawning(SpawnTransform);
+	}
 }
 
 void AGW_GameMode::GenerateRandomCardsForDeck()

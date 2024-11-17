@@ -40,7 +40,6 @@ public:
 	UPROPERTY() TArray<AGW_UnitRow*> AllRowsArray;
 
 	
-
 protected:
 	virtual void BeginPlay() override;
 	void GenerateRandomCardsForDeck();
@@ -53,6 +52,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int32 DeckSize = 15;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bSpawnAIController = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(EditCondition = "bSpawnAIController"))
+	float AIWaitDuration = 2.f;
 	
 	EPlayerID WhoseTurn = EPlayerID::Player1; // default of this is the starting player
 

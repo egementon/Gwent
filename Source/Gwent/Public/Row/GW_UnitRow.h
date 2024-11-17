@@ -30,6 +30,7 @@ public:
 	void UpdateAllCardsPowers(); 
 	void CalculateRowPower();
 	bool IsValidRowForCard(AGW_CardBase* Card);
+	//TODO: GetValidRows(); use for AI and highlighting
 	
 	virtual void AddToCardsArray(AGW_CardBase* AddedCard) override;
 	virtual void RemoveFromCardsArray(AGW_CardBase* RemovedCard) override;
