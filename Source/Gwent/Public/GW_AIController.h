@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_AIController.generated.h"
 
+class AGW_WeatherRow;
 class AGW_UnitRow;
 class AGW_PlayerHand;
 
@@ -29,6 +30,7 @@ protected:
 
 	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHandP2;
 	UPROPERTY() TArray<AGW_UnitRow*> RowArrayP2;
+	UPROPERTY() TObjectPtr<AGW_WeatherRow> WeatherRow;
 
 private:
 	FTimerHandle AutoCardTimerHandle;

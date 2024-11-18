@@ -9,12 +9,19 @@
 #include "Row/GW_Deck.h"
 #include "Row/GW_Graveyard.h"
 #include "Row/GW_PlayerHand.h"
+#include "Row/GW_WeatherRow.h"
 
 
 void AGW_GameMode::RegisterRow(AGW_RowBase* NewRow)
 {
 	if (AGW_UnitRow* NewUnitRow = Cast<AGW_UnitRow>(NewRow))
 	{
+		if (AGW_WeatherRow* NewWeatherRow = Cast<AGW_WeatherRow>(NewRow))
+		{
+			this->WeatherRow = NewWeatherRow;
+			return;
+		}
+		
 		if (NewRow->GetPlayerID() == EPlayerID::Player1)
 		{
 			this->RowArrayP1.Add(NewUnitRow);

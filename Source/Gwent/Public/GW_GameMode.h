@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GW_GameMode.generated.h"
 
+class AGW_WeatherRow;
 class AGW_RowBase;
 class AGW_Deck;
 class AGW_CardBase;
@@ -27,6 +28,8 @@ public:
 	EPlayerID GetWhoseTurn();
 
 	// Row references
+	UPROPERTY() TArray<AGW_UnitRow*> AllRowsArray;
+	
 	UPROPERTY() TArray<AGW_UnitRow*> RowArrayP1;
 	UPROPERTY() TObjectPtr<AGW_Deck> DeckP1;
 	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHandP1;
@@ -36,8 +39,8 @@ public:
 	UPROPERTY() TObjectPtr<AGW_Deck> DeckP2;
 	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHandP2;
 	UPROPERTY() TObjectPtr<AGW_Graveyard> GraveyardP2;
-
-	UPROPERTY() TArray<AGW_UnitRow*> AllRowsArray;
+	
+	UPROPERTY() TObjectPtr<AGW_WeatherRow> WeatherRow;
 
 	
 protected:

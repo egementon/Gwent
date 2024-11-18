@@ -8,6 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Row/GW_Graveyard.h"
 #include "Row/GW_UnitRow.h"
+#include "Row/GW_WeatherRow.h"
 
 
 // Sets default values
@@ -73,9 +74,9 @@ void AGW_CardBase::SetCardPower(int32 NewCardPower)
 	CardPowerText->SetTextRenderColor(PowerColor);
 }
 
-void AGW_CardBase::SetIsDead(bool bNewIsDead)
+void AGW_CardBase::SetIsSelectable(bool bNewIsSelectable)
 {
-	bIsDead = bNewIsDead;
+	bIsSelectable = bNewIsSelectable;
 }
 
 void AGW_CardBase::HighlightCard(bool bHighlight)
@@ -88,9 +89,14 @@ int32 AGW_CardBase::GetBaseCardPower() const
 	return BaseCardPower;
 }
 
-bool AGW_CardBase::GetIsDead()
+bool AGW_CardBase::GetIsSelectable()
 {
-	return bIsDead;
+	return bIsSelectable;
+}
+
+bool AGW_CardBase::IsWeatherCard()
+{
+	return GetCardAbility() == ECardAbility::BadWeather || GetCardAbility() == ECardAbility::ClearWeather;
 }
 
 void AGW_CardBase::InitializeCardData(FCardData NewCardData)
@@ -124,8 +130,10 @@ void AGW_CardBase::DestroySelf()
 		}
 		if (CardAbility == ECardAbility::BadWeather)
 		{
-			Row->bRowHasBadWeather = false;
-			Row->UpdateAllCardsPowers();
+			if (AGW_WeatherRow* WeatherRow = Cast<AGW_WeatherRow>(Row))
+			{
+				WeatherRow->ClearWeather();
+			}
 		}
 		
 		// if special card destroyed from UnitRow
@@ -139,7 +147,7 @@ void AGW_CardBase::DestroySelf()
 	OwnerRow->RemoveFromCardsArray(this);
 	
 	SetOwnerRow(Graveyard, false);
-	bIsDead = true;
+	bIsSelectable = false;
 }
 
 void AGW_CardBase::DestroySelfAfterDelay(const float Delay)

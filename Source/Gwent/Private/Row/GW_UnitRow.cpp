@@ -130,6 +130,17 @@ void AGW_UnitRow::CalculateRowPower()
 
 bool AGW_UnitRow::IsValidRowForCard(AGW_CardBase* Card)
 {
+	// for weather cards
+	if (Card->IsWeatherCard())
+	{
+		if (this->bIsWeatherRow)
+		{
+			return true;	
+		}
+		
+		return false;
+	}
+	
 	//TODO: Spy cards should be placeable on opponent rows
 	if (GetPlayerID() != Card->PlayerID) 
 	{

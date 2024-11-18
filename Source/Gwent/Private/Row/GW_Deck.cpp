@@ -41,6 +41,6 @@ void AGW_Deck::GiveRandomCardsToHand()
 		AGW_CardBase* RandomCard = SnappedCardsArray[RandomIndex];
 		RandomCard->DetachFromOwnerRow();
 		RandomCard->SetOwnerRow(PlayerHand,false);
-		RandomCard->SetIsDead(false);
+		RandomCard->SetIsSelectable(true);
 	}
 }

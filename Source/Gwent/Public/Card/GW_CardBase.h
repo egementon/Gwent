@@ -30,10 +30,11 @@ public:
 	EUnitRowType GetCardRowType() const;
 	ECardAbility GetCardAbility() const;
 	int32 GetBaseCardPower() const;
-	bool GetIsDead();
+	bool GetIsSelectable();
+	bool IsWeatherCard();
 	
 	void SetCardPower(int32 NewCardPower);
-	void SetIsDead(bool bNewIsDead);
+	void SetIsSelectable(bool bNewIsSelectable);
 	void HighlightCard(bool bHighlight);
 
 	// Row Functions
@@ -75,7 +76,7 @@ protected:
 	
 	int32 BaseCardPower;
 
-	bool bIsDead = true; // (i.e. in Graveyard or Deck)
+	bool bIsSelectable = false;
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")

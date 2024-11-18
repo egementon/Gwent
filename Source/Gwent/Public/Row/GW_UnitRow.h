@@ -61,5 +61,6 @@ protected:
 	UPROPERTY() AGW_CardBase* SnappedSpecialCard;
 	int32 TotalPower;
 	bool bIsSpecialSlotEmpty = true;
+	bool bIsWeatherRow = false;
 	
 };

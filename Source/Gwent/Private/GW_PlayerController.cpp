@@ -101,8 +101,8 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
     {
         if (AGW_CardBase* CardUnderCursor = Cast<AGW_CardBase>(HitResult.GetActor()))
         {
-            // can only select same ID cards and cards that are not in the graveyard or deck
-            if (PlayerControllerID == CardUnderCursor->PlayerID && !CardUnderCursor->GetIsDead())
+            // can only select cards that have same ID 
+            if (PlayerControllerID == CardUnderCursor->PlayerID && CardUnderCursor->GetIsSelectable())
             {
                 return CardUnderCursor;
             }
