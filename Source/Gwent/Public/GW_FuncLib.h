@@ -7,6 +7,7 @@
 #include "Row/GW_RowBase.h"
 #include "GW_FuncLib.generated.h"
 
+class AGW_GameMode;
 /**
  * 
  */
@@ -16,9 +17,6 @@ class GWENT_API UGW_FuncLib : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 
 public:
-	static EPlayerID GetWhoseTurn(const UWorld* World);
-
-	// check if it is PlayerID's turn
-	static bool CheckIsPlayerIDTurn(const UWorld* World, EPlayerID PlayerIDToCheck);
-
+	static AGW_GameMode* GetGameMode(const UWorld* World);
+	
 };

@@ -4,6 +4,7 @@
 #include "Gwent/Public/GW_PlayerController.h"
 
 #include "GW_FuncLib.h"
+#include "GW_GameMode.h"
 #include "Camera/CameraActor.h"
 #include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
@@ -41,7 +42,7 @@ void AGW_PlayerController::OnClicked()
 {
     UGameplayStatics::PlaySound2D(this, ClickSFX);
 
-    if (!UGW_FuncLib::CheckIsPlayerIDTurn(GetWorld(), PlayerControllerID))
+    if (!UGW_FuncLib::GetGameMode(GetWorld())->IsMyTurn(PlayerControllerID))
     {
         return;
     }
@@ -54,6 +55,9 @@ void AGW_PlayerController::OnClicked()
         {
             SelectedCard->DetachFromOwnerRow();
             SelectedCard->SetOwnerRow(SelectedRow, true);
+            
+            // end the turn
+            UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
         }
         
         SelectedCard->HighlightCard(false);

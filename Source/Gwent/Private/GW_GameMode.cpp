@@ -6,6 +6,7 @@
 #include "GW_AIController.h"
 #include "Card/GW_CardBase.h"
 #include "Data/GW_CardDataAsset.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Row/GW_Deck.h"
 #include "Row/GW_Graveyard.h"
 #include "Row/GW_PlayerHand.h"
@@ -66,9 +67,25 @@ void AGW_GameMode::RegisterRow(AGW_RowBase* NewRow)
 	}
 }
 
-EPlayerID AGW_GameMode::GetWhoseTurn()
+bool AGW_GameMode::IsMyTurn(const EPlayerID PlayerID) const
 {
-	return WhoseTurn;
+	if (PlayerID == EPlayerID::Player1 && CurrentGamePhase == EGamePhase::Player1Turn)
+	{
+		return true;
+	}
+
+	if (PlayerID == EPlayerID::Player2 && CurrentGamePhase == EGamePhase::Player2Turn)
+	{
+		return true;
+	}
+	
+	return false;
+}
+
+void AGW_GameMode::EndPlayerTurn(EPlayerID PlayerID)
+{
+	LastPlayedID = PlayerID;
+	SetGamePhase(EGamePhase::Wait);
 }
 
 void AGW_GameMode::BeginPlay()
@@ -78,19 +95,9 @@ void AGW_GameMode::BeginPlay()
 	// define AllRowsArray
 	AllRowsArray = RowArrayP1;
 	AllRowsArray.Append(RowArrayP2);
-	
-	GenerateRandomCardsForDeck();
 
-	if (bSpawnAIController)
-	{
-		const FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector);
-		AGW_AIController* AIController = GetWorld()->SpawnActorDeferred<AGW_AIController>(
-			AGW_AIController::StaticClass(),
-			SpawnTransform);
-		
-		AIController->WaitDuration = AIWaitDuration;
-		AIController->FinishSpawning(SpawnTransform);
-	}
+	// start the game
+	SetGamePhase(EGamePhase::Start);
 }
 
 void AGW_GameMode::GenerateRandomCardsForDeck()
@@ -103,12 +110,15 @@ void AGW_GameMode::GenerateRandomCardsForDeck()
 	
 	TArray<FCardData> SelectableCards = CardDataAsset->CardDataArray;
 
-	// remove excluded cards from SelectableCards
-	for (int32 i = SelectableCards.Num() - 1; i >= 0; --i)
+	if (bDebug_FilterCards)
 	{
-		if (SelectableCards[i].bDebug_ExcludeFromDeck == true)
+		// remove excluded cards from SelectableCards
+		for (int32 i = SelectableCards.Num() - 1; i >= 0; --i)
 		{
-			SelectableCards.RemoveAt(i);
+			if (SelectableCards[i].bDebug_ExcludeFromDeck == true)
+			{
+				SelectableCards.RemoveAt(i);
+			}
 		}
 	}
 
@@ -146,5 +156,80 @@ void AGW_GameMode::GenerateRandomCardsForDeck()
 		Card->Graveyard = GraveyardP2;
 		Card->SetOwnerRow(DeckP2, false);
 		Card->FinishSpawning(FTransform::Identity);
+	}
+
+	SetGamePhase(EGamePhase::Player1Turn);
+}
+
+void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
+{
+	CurrentGamePhase = NewPhase;
+	
+	switch (NewPhase)
+	{
+	case EGamePhase::Start:
+		UKismetSystemLibrary::PrintString(this, "GamePhase = Start");
+
+		GenerateRandomCardsForDeck();
+
+		if (bSpawnAIController)
+		{
+			const FTransform SpawnTransform = FTransform(FRotator::ZeroRotator, FVector::ZeroVector);
+			AIController = GetWorld()->SpawnActorDeferred<AGW_AIController>(
+				AGW_AIController::StaticClass(),
+				SpawnTransform);
+		
+			AIController->WaitDuration = AIWaitDuration;
+			AIController->FinishSpawning(SpawnTransform);
+		}
+		break;
+
+		
+	case EGamePhase::Player1Turn:
+		UKismetSystemLibrary::PrintString(this, "GamePhase = Player1Turn");
+		break;
+
+		
+	case EGamePhase::Wait:
+		UKismetSystemLibrary::PrintString(this, "GamePhase = Wait");
+
+		GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer, this, &AGW_GameMode::StartPlayerTurn, 1.f);
+		break;
+
+		
+	case EGamePhase::Player2Turn:
+
+		// if Player 2 is an AI Controller and exists, start its turn
+		if (bSpawnAIController)
+		{
+			AIController->StartTurn();
+			UKismetSystemLibrary::PrintString(this, "GamePhase = Player2Turn");
+		}
+		else // if there is no AI controller, it will be Player 1's turn again
+		{
+			UKismetSystemLibrary::PrintString(this, "No AI Controller");
+			SetGamePhase(EGamePhase::Player1Turn);
+		}
+		break;
+
+		
+	case EGamePhase::End:
+		UKismetSystemLibrary::PrintString(this, "GamePhase = End");
+
+		//TODO: Win-Lose screens
+		break;
+	}
+}
+
+void AGW_GameMode::StartPlayerTurn()
+{
+	// decide which player should play next turn
+	if (LastPlayedID == EPlayerID::Player1)
+	{
+		SetGamePhase(EGamePhase::Player2Turn);
+	}
+	else if (LastPlayedID == EPlayerID::Player2)
+	{
+		SetGamePhase(EGamePhase::Player1Turn);
 	}
 }

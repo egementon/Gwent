@@ -20,7 +20,7 @@ void AGW_Deck::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GetWorld()->GetTimerManager().SetTimer(StartTimerHandle, this, &AGW_Deck::GiveRandomCardsToHand, 1.f);
+	GetWorld()->GetTimerManager().SetTimer(StartTimer, this, &AGW_Deck::GiveRandomCardsToHand, 1.f);
 }
 
 void AGW_Deck::GiveRandomCardsToHand()

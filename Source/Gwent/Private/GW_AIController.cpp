@@ -3,6 +3,7 @@
 
 #include "GW_AIController.h"
 
+#include "GW_FuncLib.h"
 #include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
 #include "Row/GW_PlayerHand.h"
@@ -21,7 +22,13 @@ void AGW_AIController::BeginPlay()
 	RowArrayP2 = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArrayP2;
 	WeatherRow = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->WeatherRow;
 
-	GetWorld()->GetTimerManager().SetTimer(AutoCardTimerHandle, this, &AGW_AIController::PlayRandomCard, WaitDuration, true, 2.f);
+	// play cards periodically 
+	//GetWorld()->GetTimerManager().SetTimer(WaitBeforePlayTimer, this, &AGW_AIController::PlayRandomCard, WaitDuration, true, 2.f);
+}
+
+void AGW_AIController::StartTurn()
+{
+	GetWorld()->GetTimerManager().SetTimer(WaitBeforePlayTimer, this, &AGW_AIController::PlayRandomCard, WaitDuration);
 }
 
 void AGW_AIController::PlayRandomCard()
@@ -55,5 +62,7 @@ void AGW_AIController::PlayRandomCard()
 	
 	SelectedCard->DetachFromOwnerRow();
 	SelectedCard->SetOwnerRow(ValidRow, true);
+
+	UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
 }
 

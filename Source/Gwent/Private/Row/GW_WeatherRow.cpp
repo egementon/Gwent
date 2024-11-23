@@ -36,24 +36,25 @@ void AGW_WeatherRow::BeginPlay()
 
 void AGW_WeatherRow::AddToCardsArray(AGW_CardBase* AddedCard)
 {
-	Super::AddToCardsArray(AddedCard);
-	
-	AddedCard->SetIsSelectable(false);
+	bool bRowHasSameNameCard = false;
 
-	// avoid stacking multiples of the same card by destroying the other same name card
-	if (SnappedCardsArray.IsEmpty()) return;
 	for (AGW_CardBase* Card : SnappedCardsArray)
 	{
-		if (Card == AddedCard)
-		{
-			continue;
-		}
-		
 		if (AddedCard->GetCardName() == Card->GetCardName())
 		{
-			Card->DestroySelf();
+			bRowHasSameNameCard = true;
 			break;
 		}
+	}
+
+	if (bRowHasSameNameCard)
+	{
+		AddedCard->DestroySelf();
+	}
+	else
+	{
+		Super::AddToCardsArray(AddedCard);
+		AddedCard->SetIsSelectable(false);
 	}
 }
 

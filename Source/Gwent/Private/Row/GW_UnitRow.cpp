@@ -154,7 +154,7 @@ bool AGW_UnitRow::IsValidRowForCard(AGW_CardBase* Card)
 
 	const EUnitRowType CardRowType = Card->GetCardRowType();
 	
-	if (CardRowType == EUnitRowType::AllRows)
+	if (CardRowType == EUnitRowType::AllRows && !this->bIsWeatherRow) // can be placed on all unit rows
 	{
 		return true;
 	}

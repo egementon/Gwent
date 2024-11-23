@@ -19,6 +19,6 @@ protected:
 	void GiveRandomCardsToHand();
 
 private:
-	FTimerHandle StartTimerHandle;
+	FTimerHandle StartTimer;
 	
 };

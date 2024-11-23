@@ -18,6 +18,8 @@ class GWENT_API AGW_AIController : public AActor
 
 public:
 	AGW_AIController();
+	
+	void StartTurn();
 	void PlayRandomCard();
 
 	float WaitDuration = 2.f;
@@ -33,6 +35,6 @@ protected:
 	UPROPERTY() TObjectPtr<AGW_WeatherRow> WeatherRow;
 
 private:
-	FTimerHandle AutoCardTimerHandle;
+	FTimerHandle WaitBeforePlayTimer;
 	
 };
