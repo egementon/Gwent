@@ -6,6 +6,7 @@
 #include "GW_AIController.h"
 #include "Card/GW_CardBase.h"
 #include "Data/GW_CardDataAsset.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Row/GW_Deck.h"
 #include "Row/GW_Graveyard.h"
@@ -88,6 +89,53 @@ void AGW_GameMode::EndPlayerTurn(EPlayerID PlayerID)
 	SetGamePhase(EGamePhase::Wait);
 }
 
+void AGW_GameMode::PlayerPassedTurn(EPlayerID PlayerID)
+{
+	PlayerID == EPlayerID::Player1 ? Player1Data.PassedTurn = true : Player2Data.PassedTurn = true;
+
+	// check end condition, if both passed turn then end the game/round
+	if (Player1Data.PassedTurn && Player2Data.PassedTurn)
+	{
+		GetWorld()->GetTimerManager().SetTimer(
+	WaitPhaseTimer,
+	[this]() { SetGamePhase(EGamePhase::End); },
+	1.f,
+	false);
+	}
+	else
+	{
+		EndPlayerTurn(PlayerID);
+	}
+}
+
+void AGW_GameMode::SetPlayerHandSize(EPlayerID PlayerID, int32 HandSize)
+{
+	PlayerID == EPlayerID::Player1 ? Player1Data.HandSize = HandSize : Player2Data.HandSize = HandSize;
+}
+
+void AGW_GameMode::UpdatePlayerScore(const EPlayerID PlayerID)
+{
+	if (PlayerID == EPlayerID::Player1)
+	{
+		Player1Data.Score = CalculateScore(RowArrayP1);
+	}
+	else
+	{
+		Player2Data.Score = CalculateScore(RowArrayP2);
+	}
+}
+
+int32 AGW_GameMode::CalculateScore(TArray<AGW_UnitRow*> RowArray)
+{
+	int32 Total = 0;
+	for (AGW_UnitRow* Row : RowArray)
+	{
+		Total += Row->GetTotalPower();
+	}
+	
+	return Total;
+}
+
 void AGW_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -129,7 +177,7 @@ void AGW_GameMode::GenerateRandomCardsForDeck()
 	}
 	
 	// give cards to P1's Deck 	// TODO: refactor repeating code
-	for (int i = 0; i < DeckSize; ++i)
+	for (int i = 0; i < InitialDeckSize; ++i)
 	{
 		// Randomly select card data from the data asset array
 		const int32 RandomIndex = FMath::RandRange(0, SelectableCards.Num() - 1);
@@ -144,7 +192,7 @@ void AGW_GameMode::GenerateRandomCardsForDeck()
 	}
 
 	// give cards to P2's Deck
-	for (int i = 0; i < DeckSize; ++i)
+	for (int i = 0; i < InitialDeckSize; ++i)
 	{
 		// Randomly select card data from the data asset array
 		const int32 RandomIndex = FMath::RandRange(0, SelectableCards.Num() - 1);
@@ -158,8 +206,19 @@ void AGW_GameMode::GenerateRandomCardsForDeck()
 		Card->FinishSpawning(FTransform::Identity);
 	}
 
-	SetGamePhase(EGamePhase::Player1Turn);
+	GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer, this, &AGW_GameMode::GiveDeckCardsToHands, 1.f);
 }
+
+void AGW_GameMode::GiveDeckCardsToHands()
+{
+	if (InitialHandSize <= InitialDeckSize)
+	{
+		DeckP1->GiveRandomCardsToHand(InitialHandSize);
+		DeckP2->GiveRandomCardsToHand(InitialHandSize);
+		SetGamePhase(EGamePhase::Player1Turn);
+	}
+}
+
 
 void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 {
@@ -191,6 +250,11 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 
 		
 	case EGamePhase::Wait:
+		// print score
+		UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::SanitizeFloat(Player1Data.Score));
+		UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::SanitizeFloat(Player2Data.Score));
+		UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::SanitizeFloat(Player1Data.HandSize));
+		UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::SanitizeFloat(Player2Data.HandSize));
 		UKismetSystemLibrary::PrintString(this, "GamePhase = Wait");
 
 		GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer, this, &AGW_GameMode::StartPlayerTurn, 1.f);
@@ -216,6 +280,12 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	case EGamePhase::End:
 		UKismetSystemLibrary::PrintString(this, "GamePhase = End");
 
+		EMatchResult MatchResult = DetermineMatchResult();
+		
+		UKismetSystemLibrary::PrintString(this, 
+	"Match Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
+					   ->GetNameStringByValue(static_cast<int64>(MatchResult)));
+
 		//TODO: Win-Lose screens
 		break;
 	}
@@ -232,4 +302,19 @@ void AGW_GameMode::StartPlayerTurn()
 	{
 		SetGamePhase(EGamePhase::Player1Turn);
 	}
+}
+
+EMatchResult AGW_GameMode::DetermineMatchResult()
+{
+	if (Player1Data.Score > Player2Data.Score)
+	{
+		return EMatchResult::Player1Wins;
+	}
+
+	if (Player2Data.Score > Player1Data.Score)
+	{
+		return EMatchResult::Player2Wins;
+	}
+
+	return EMatchResult::Draw;
 }

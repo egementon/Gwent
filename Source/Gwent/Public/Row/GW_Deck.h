@@ -13,10 +13,11 @@ class GWENT_API AGW_Deck : public AGW_RowBase
 
 public:
 	AGW_Deck();
+	
+	void GiveRandomCardsToHand(int32 StartingHandSize);
 
 protected:
 	virtual void BeginPlay() override;
-	void GiveRandomCardsToHand();
 
 private:
 	FTimerHandle StartTimer;

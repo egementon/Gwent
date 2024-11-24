@@ -72,7 +72,7 @@ void AGW_WeatherRow::DestroyBadWeatherCards()
 
 void AGW_WeatherRow::ClearWeather()
 {
-	TArray<AGW_UnitRow*> RowArray = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->AllRowsArray;
+	TArray<AGW_UnitRow*> RowArray = GameMode->AllRowsArray;
 	for (AGW_UnitRow* Row : RowArray)
 	{
 		Row->bRowHasBadWeather = false;

@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_RowBase.generated.h"
 
+class AGW_GameMode;
 class UBoxComponent;
 class AGW_CardBase;
 
@@ -31,10 +32,13 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBoxComponent* RowBoxComponent;
 
+	UPROPERTY()
+	AGW_GameMode* GameMode;
+
 	UPROPERTY(BlueprintReadOnly)
 	TArray<AGW_CardBase*> SnappedCardsArray;
 
-	void UpdateCardsLocations();
+	virtual void UpdateCardsLocations();
 
 	float CardSpacingX = 107.f; // default for PlayerHand and UnitRows
 	float CardSpacingZ = 1.f;

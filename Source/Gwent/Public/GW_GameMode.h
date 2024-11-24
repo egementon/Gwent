@@ -47,24 +47,39 @@ public:
 	// Turn-based system functions
 	bool IsMyTurn(EPlayerID PlayerID) const;
 	void EndPlayerTurn(EPlayerID PlayerID);
+	void PlayerPassedTurn(EPlayerID PlayerID);
+
+	// PlayerData
+	FPlayerData Player1Data;
+	FPlayerData Player2Data;
+	
+	void SetPlayerHandSize(EPlayerID PlayerID, int32 HandSize);
+	void UpdatePlayerScore(EPlayerID PlayerID);
+	int32 CalculateScore(TArray<AGW_UnitRow*> RowArray);
 	
 protected:
 	virtual void BeginPlay() override;
 
 	void GenerateRandomCardsForDeck();
+	void GiveDeckCardsToHands();
 
 	void SetGamePhase(EGamePhase NewPhase);
 
 	void StartPlayerTurn();
+
+	EMatchResult DetermineMatchResult();
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AGW_CardBase> CardClass; 
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UGW_CardDataAsset* CardDataAsset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	int32 DeckSize = 15;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 InitialDeckSize = 15;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	int32 InitialHandSize = 10;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSpawnAIController = false;
@@ -80,7 +95,8 @@ protected:
 	
 	EGamePhase CurrentGamePhase = EGamePhase::Start;
 	
-	EPlayerID LastPlayedID; // ID of the last player who played card
+	EPlayerID LastPlayedID = EPlayerID::Player1; // ID of the last player who played card
+
 
 private:
 	FTimerHandle WaitPhaseTimer;

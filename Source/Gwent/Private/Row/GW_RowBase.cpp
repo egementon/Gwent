@@ -89,8 +89,9 @@ void AGW_RowBase::BeginPlay()
 void AGW_RowBase::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	
-	if (AGW_GameMode* GameMode = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode()))
+
+	GameMode = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode());
+	if (GameMode)
 	{
 		GameMode->RegisterRow(this);
 	}

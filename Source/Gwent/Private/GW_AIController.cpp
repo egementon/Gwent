@@ -18,9 +18,12 @@ void AGW_AIController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerHandP2 = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->PlayerHandP2;
-	RowArrayP2 = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->RowArrayP2;
-	WeatherRow = Cast<AGW_GameMode>(GetWorld()->GetAuthGameMode())->WeatherRow;
+	if (const AGW_GameMode* GameMode = UGW_FuncLib::GetGameMode(GetWorld()))
+	{
+		PlayerHandP2 = GameMode->PlayerHandP2;
+		RowArrayP2 = GameMode->RowArrayP2;
+		WeatherRow = GameMode->WeatherRow;
+	}
 
 	// play cards periodically 
 	//GetWorld()->GetTimerManager().SetTimer(WaitBeforePlayTimer, this, &AGW_AIController::PlayRandomCard, WaitDuration, true, 2.f);
@@ -34,8 +37,7 @@ void AGW_AIController::StartTurn()
 void AGW_AIController::PlayRandomCard()
 {
 	TArray<AGW_CardBase*> HandCards = PlayerHandP2->GetSnappedCardsArray();
-	if (HandCards.IsEmpty()) return;
-
+	
 	AGW_UnitRow* ValidRow = nullptr;
 
 	// select random card from Hand
@@ -63,6 +65,14 @@ void AGW_AIController::PlayRandomCard()
 	SelectedCard->DetachFromOwnerRow();
 	SelectedCard->SetOwnerRow(ValidRow, true);
 
-	UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
+	if (UGW_FuncLib::GetGameMode(GetWorld())->Player2Data.HandSize == 0)
+	{
+		// pass turn if no cards left in the hand
+		UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
+	}
+	else
+	{
+		UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
+	}
 }
 

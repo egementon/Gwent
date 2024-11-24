@@ -2,6 +2,9 @@
 
 
 #include "Row/GW_UnitRow.h"
+
+#include "GW_FuncLib.h"
+#include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
 #include "Components/BoxComponent.h"
 #include "Components/TextRenderComponent.h"
@@ -38,6 +41,11 @@ AGW_CardBase* AGW_UnitRow::GetSnappedSpecialCard()
 bool AGW_UnitRow::IsSpecialSlotEmpty()
 {
 	return bIsSpecialSlotEmpty;
+}
+
+int32 AGW_UnitRow::GetTotalPower()
+{
+	return TotalPower;
 }
 
 void AGW_UnitRow::SetSpecialCard(AGW_CardBase* SpecialCard)
@@ -126,6 +134,8 @@ void AGW_UnitRow::CalculateRowPower()
 	}
 
 	TotalPowerText->SetText(FText::AsNumber(TotalPower));
+
+	GameMode->UpdatePlayerScore(this->PlayerID);
 }
 
 bool AGW_UnitRow::IsValidRowForCard(AGW_CardBase* Card)

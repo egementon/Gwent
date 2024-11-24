@@ -55,9 +55,16 @@ void AGW_PlayerController::OnClicked()
         {
             SelectedCard->DetachFromOwnerRow();
             SelectedCard->SetOwnerRow(SelectedRow, true);
-            
-            // end the turn
-            UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
+
+            if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data.HandSize == 0)
+            {
+                UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
+            }
+            else
+            {
+                // end the turn
+                UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
+            }
         }
         
         SelectedCard->HighlightCard(false);

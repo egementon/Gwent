@@ -22,6 +22,7 @@ public:
 	// Getters
 	AGW_CardBase* GetSnappedSpecialCard();
 	bool IsSpecialSlotEmpty();
+	int32 GetTotalPower();
 
 	// Setters
 	void SetSpecialCard(AGW_CardBase* SpecialCard);
