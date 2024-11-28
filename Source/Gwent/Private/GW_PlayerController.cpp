@@ -3,6 +3,8 @@
 
 #include "Gwent/Public/GW_PlayerController.h"
 
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "GW_FuncLib.h"
 #include "GW_GameMode.h"
 #include "Camera/CameraActor.h"
@@ -17,15 +19,37 @@ AGW_PlayerController::AGW_PlayerController()
     bShowMouseCursor = true;
 }
 
+void AGW_PlayerController::StartTurn()
+{
+    if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data.PassedTurn)
+    {
+        OnPassedTurn();
+    }
+}
+
 void AGW_PlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
-    
-    InputComponent->BindAction("LeftClick", IE_Pressed, this, &AGW_PlayerController::OnClicked);
+
+    if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent))
+    {
+        // Bind Input Actions
+        EnhancedInput->BindAction(LeftClickAction, ETriggerEvent::Started, this, &AGW_PlayerController::OnClicked);
+        EnhancedInput->BindAction(HoldSpaceAction, ETriggerEvent::Triggered, this, &AGW_PlayerController::OnPassedTurn);
+    }
 }
 
 void AGW_PlayerController::BeginPlay()
 {
+    if (APlayerController* PC = Cast<APlayerController>(this))
+    {
+        UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
+        if (Subsystem)
+        {
+            Subsystem->AddMappingContext(PlayerInputMapping, 0);
+        }
+    }
+    
     // Set the player's view to the camera actor
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
     if (PlayerController)
@@ -79,6 +103,11 @@ void AGW_PlayerController::OnClicked()
             SelectedCard->HighlightCard(true);
         }
     }
+}
+
+void AGW_PlayerController::OnPassedTurn()
+{
+    UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
 }
 
 

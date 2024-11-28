@@ -4,6 +4,7 @@
 #include "Gwent/Public/GW_GameMode.h"
 
 #include "GW_AIController.h"
+#include "GW_PlayerController.h"
 #include "Card/GW_CardBase.h"
 #include "Data/GW_CardDataAsset.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -96,9 +97,10 @@ void AGW_GameMode::PlayerPassedTurn(EPlayerID PlayerID)
 	// check end condition, if both passed turn then end the game/round
 	if (Player1Data.PassedTurn && Player2Data.PassedTurn)
 	{
-		GetWorld()->GetTimerManager().SetTimer(
-	WaitPhaseTimer,
-	[this]() { SetGamePhase(EGamePhase::End); },
+		GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer,[this]()
+		{
+			SetGamePhase(EGamePhase::End);
+		},
 	1.f,
 	false);
 	}
@@ -227,7 +229,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	switch (NewPhase)
 	{
 	case EGamePhase::Start:
-		UKismetSystemLibrary::PrintString(this, "GamePhase = Start");
+		UKismetSystemLibrary::PrintString(this, "GamePhase = Start", true, true, FColor::Green, 30.f, FName("phase"));
 
 		GenerateRandomCardsForDeck();
 
@@ -241,21 +243,21 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			AIController->WaitDuration = AIWaitDuration;
 			AIController->FinishSpawning(SpawnTransform);
 		}
+
+		PlayerController = Cast<AGW_PlayerController>(GetWorld()->GetFirstPlayerController());
+		
 		break;
 
 		
 	case EGamePhase::Player1Turn:
-		UKismetSystemLibrary::PrintString(this, "GamePhase = Player1Turn");
+		UKismetSystemLibrary::PrintString(this, "GamePhase = Player1Turn", true, true, FColor::Green, 30.f, FName("phase"));
+
+		PlayerController->StartTurn();
 		break;
 
 		
 	case EGamePhase::Wait:
-		// print score
-		UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::SanitizeFloat(Player1Data.Score));
-		UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::SanitizeFloat(Player2Data.Score));
-		UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::SanitizeFloat(Player1Data.HandSize));
-		UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::SanitizeFloat(Player2Data.HandSize));
-		UKismetSystemLibrary::PrintString(this, "GamePhase = Wait");
+		UKismetSystemLibrary::PrintString(this, "GamePhase = Wait", true, true, FColor::Green, 30.f, FName("phase"));
 
 		GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer, this, &AGW_GameMode::StartPlayerTurn, 1.f);
 		break;
@@ -267,7 +269,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 		if (bSpawnAIController)
 		{
 			AIController->StartTurn();
-			UKismetSystemLibrary::PrintString(this, "GamePhase = Player2Turn");
+			UKismetSystemLibrary::PrintString(this, "GamePhase = Player2Turn", true, true, FColor::Green, 30.f, FName("phase"));
 		}
 		else // if there is no AI controller, it will be Player 1's turn again
 		{
@@ -278,17 +280,23 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 
 		
 	case EGamePhase::End:
-		UKismetSystemLibrary::PrintString(this, "GamePhase = End");
+		UKismetSystemLibrary::PrintString(this, "GamePhase = End", true, true, FColor::Green, 30.f, FName("phase"));
 
 		EMatchResult MatchResult = DetermineMatchResult();
 		
 		UKismetSystemLibrary::PrintString(this, 
 	"Match Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
-					   ->GetNameStringByValue(static_cast<int64>(MatchResult)));
+					   ->GetNameStringByValue(static_cast<int64>(MatchResult)), true, true, FColor::Green, 30.f, FName("phase"));
 
 		//TODO: Win-Lose screens
 		break;
 	}
+
+	// print score
+	UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::FromInt(Player1Data.Score), true, true, FColor::Cyan, 30.f, FName("p1score"));
+	UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::FromInt(Player2Data.Score), true, true, FColor::Red, 30.f, FName("p2score"));
+	UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::FromInt(Player1Data.HandSize), true, true, FColor::Cyan, 30.f, FName("p1handsize"));
+	UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::FromInt(Player2Data.HandSize), true, true, FColor::Red, 30.f, FName("p2handsize"));
 }
 
 void AGW_GameMode::StartPlayerTurn()

@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GW_GameMode.generated.h"
 
+class AGW_PlayerController;
 class AGW_AIController;
 class AGW_WeatherRow;
 class AGW_RowBase;
@@ -68,6 +69,12 @@ protected:
 	void StartPlayerTurn();
 
 	EMatchResult DetermineMatchResult();
+
+	UPROPERTY()
+	AGW_PlayerController* PlayerController; // Player 1
+	
+	UPROPERTY()
+	AGW_AIController* AIController; // Player 2
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSubclassOf<AGW_CardBase> CardClass; 
@@ -83,9 +90,6 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSpawnAIController = false;
-
-	UPROPERTY()
-	AGW_AIController* AIController;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(EditCondition = "bSpawnAIController"))
 	float AIWaitDuration = 2.f;
