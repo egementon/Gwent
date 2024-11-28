@@ -20,6 +20,8 @@ class AGW_UnitRow;
 /**
  * 
  */
+DECLARE_MULTICAST_DELEGATE(FOnNewRoundStarted);
+
 UCLASS()
 class GWENT_API AGW_GameMode : public AGameModeBase
 {
@@ -57,6 +59,9 @@ public:
 	void SetPlayerHandSize(EPlayerID PlayerID, int32 HandSize);
 	void UpdatePlayerScore(EPlayerID PlayerID);
 	int32 CalculateScore(TArray<AGW_UnitRow*> RowArray);
+
+	FOnNewRoundStarted OnNewRoundStarted;
+
 	
 protected:
 	virtual void BeginPlay() override;
@@ -68,7 +73,9 @@ protected:
 
 	void StartPlayerTurn();
 
-	EMatchResult DetermineMatchResult();
+	EMatchResult DetermineResult(bool& bMatchEnded);
+
+	void ClearAllRows();
 
 	UPROPERTY()
 	AGW_PlayerController* PlayerController; // Player 1
@@ -100,6 +107,10 @@ protected:
 	EGamePhase CurrentGamePhase = EGamePhase::Start;
 	
 	EPlayerID LastPlayedID = EPlayerID::Player1; // ID of the last player who played card
+
+	bool bIsFirstRound = true;
+
+	EMatchResult FinalMatchResult = EMatchResult::Draw;
 
 
 private:

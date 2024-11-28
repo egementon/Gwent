@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_AIController.generated.h"
 
+class AGW_GameMode;
 class AGW_WeatherRow;
 class AGW_UnitRow;
 class AGW_PlayerHand;
@@ -20,12 +21,13 @@ public:
 	AGW_AIController();
 	
 	void StartTurn();
-	void PlayRandomCard();
-
+	
 	float WaitDuration = 2.f;
 	
 protected:
 	virtual void BeginPlay() override;
+	void MakeDecision();
+	void PlayRandomCard();
 
 	// AI is always Player2
 	EPlayerID PlayerControllerID = EPlayerID::Player2;
@@ -33,6 +35,10 @@ protected:
 	UPROPERTY() TObjectPtr<AGW_PlayerHand> PlayerHandP2;
 	UPROPERTY() TArray<AGW_UnitRow*> RowArrayP2;
 	UPROPERTY() TObjectPtr<AGW_WeatherRow> WeatherRow;
+
+	UPROPERTY() AGW_GameMode* GameMode;
+
+	bool bReadyToPass;
 
 private:
 	FTimerHandle WaitBeforePlayTimer;
