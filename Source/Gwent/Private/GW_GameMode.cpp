@@ -7,11 +7,13 @@
 #include "GW_PlayerController.h"
 #include "Card/GW_CardBase.h"
 #include "Data/GW_CardDataAsset.h"
+#include "Data/GW_PlayerData.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Row/GW_Deck.h"
 #include "Row/GW_Graveyard.h"
 #include "Row/GW_PlayerHand.h"
 #include "Row/GW_WeatherRow.h"
+#include "UI/GW_HUD.h"
 
 
 void AGW_GameMode::RegisterRow(AGW_RowBase* NewRow)
@@ -91,10 +93,10 @@ void AGW_GameMode::EndPlayerTurn(EPlayerID PlayerID)
 
 void AGW_GameMode::PlayerPassedTurn(EPlayerID PlayerID)
 {
-	PlayerID == EPlayerID::Player1 ? Player1Data.PassedTurn = true : Player2Data.PassedTurn = true;
+	PlayerID == EPlayerID::Player1 ? Player1Data->SetPassedTurn(true) : Player2Data->SetPassedTurn(true);
 
 	// check end condition, if both passed turn then end the game/round
-	if (Player1Data.PassedTurn && Player2Data.PassedTurn)
+	if (Player1Data->IsTurnPassed() && Player2Data->IsTurnPassed())
 	{
 		GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer,[this]()
 		{
@@ -111,18 +113,18 @@ void AGW_GameMode::PlayerPassedTurn(EPlayerID PlayerID)
 
 void AGW_GameMode::SetPlayerHandSize(EPlayerID PlayerID, int32 HandSize)
 {
-	PlayerID == EPlayerID::Player1 ? Player1Data.HandSize = HandSize : Player2Data.HandSize = HandSize;
+	PlayerID == EPlayerID::Player1 ? Player1Data->SetHandSize(HandSize) : Player2Data->SetHandSize(HandSize);
 }
 
 void AGW_GameMode::UpdatePlayerScore(const EPlayerID PlayerID)
 {
 	if (PlayerID == EPlayerID::Player1)
 	{
-		Player1Data.Score = CalculateScore(RowArrayP1);
+		Player1Data->SetScore(CalculateScore(RowArrayP1));
 	}
 	else
 	{
-		Player2Data.Score = CalculateScore(RowArrayP2);
+		Player2Data->SetScore(CalculateScore(RowArrayP2));
 	}
 }
 
@@ -144,6 +146,17 @@ void AGW_GameMode::BeginPlay()
 	// define AllRowsArray
 	AllRowsArray = RowArrayP1;
 	AllRowsArray.Append(RowArrayP2);
+
+	// Create instances of UPlayerData
+	Player1Data = UGW_PlayerData::CreateWithPlayerID(this, 1);
+	Player2Data = UGW_PlayerData::CreateWithPlayerID(this, 2);
+	
+	// Get the HUD and bind UI events
+	if (AGW_HUD* GameHUD = Cast<AGW_HUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+	{
+		Player1Data->OnPlayerDataChanged.AddDynamic(GameHUD, &AGW_HUD::UpdatePlayerData);
+		Player2Data->OnPlayerDataChanged.AddDynamic(GameHUD, &AGW_HUD::UpdatePlayerData);
+	}
 
 	// start the game
 	SetGamePhase(EGamePhase::Start);
@@ -248,8 +261,8 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			}
 			else
 			{
-				Player1Data.ResetDataForNextRound();
-				Player2Data.ResetDataForNextRound();
+				Player1Data->ResetDataForNextRound();
+				Player2Data->ResetDataForNextRound();
 
 				ClearAllRows();
 				SetGamePhase(EGamePhase::Player1Turn);
@@ -340,12 +353,12 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	}
 
 	// print score
-	UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::FromInt(Player1Data.Score), true, true, FColor::Cyan, 30.f, FName("p1score"));
-	UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::FromInt(Player2Data.Score), true, true, FColor::Red, 30.f, FName("p2score"));
-	UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::FromInt(Player1Data.HandSize), true, true, FColor::Cyan, 30.f, FName("p1handsize"));
-	UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::FromInt(Player2Data.HandSize), true, true, FColor::Red, 30.f, FName("p2handsize"));
-	UKismetSystemLibrary::PrintString(this, "P1 LIVES: " + FString::FromInt(Player1Data.LifeLeft), true, true, FColor::Cyan, 30.f, FName("p1lives"));
-	UKismetSystemLibrary::PrintString(this, "P2 LIVES: " + FString::FromInt(Player2Data.LifeLeft), true, true, FColor::Red, 30.f, FName("p2lives"));
+	UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::FromInt(Player1Data->GetScore()), true, true, FColor::Cyan, 30.f, FName("p1score"));
+	UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::FromInt(Player2Data->GetScore()), true, true, FColor::Red, 30.f, FName("p2score"));
+	UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::FromInt(Player1Data->GetHandSize()), true, true, FColor::Cyan, 30.f, FName("p1handsize"));
+	UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::FromInt(Player2Data->GetHandSize()), true, true, FColor::Red, 30.f, FName("p2handsize"));
+	UKismetSystemLibrary::PrintString(this, "P1 LIVES: " + FString::FromInt(Player1Data->GetLifeLeft()), true, true, FColor::Cyan, 30.f, FName("p1lives"));
+	UKismetSystemLibrary::PrintString(this, "P2 LIVES: " + FString::FromInt(Player2Data->GetLifeLeft()), true, true, FColor::Red, 30.f, FName("p2lives"));
 }
 
 void AGW_GameMode::StartPlayerTurn()
@@ -365,25 +378,25 @@ EMatchResult AGW_GameMode::DetermineResult(bool& bMatchEnded)
 {
 	EMatchResult RoundResult = EMatchResult::Draw;
 
-	if (Player1Data.Score > Player2Data.Score)
+	if (Player1Data->GetScore() > Player2Data->GetScore())
 	{
-		Player2Data.LifeLeft--;
+		Player2Data->DecrementLifeLeft();
 		RoundResult = EMatchResult::Player1Wins;
 	}
-	else if (Player2Data.Score > Player1Data.Score)
+	else if (Player2Data->GetScore() > Player1Data->GetScore())
 	{
-		Player1Data.LifeLeft--;
+		Player1Data->DecrementLifeLeft();
 		RoundResult = EMatchResult::Player2Wins;
 	}
 	else
 	{
 		// In case of a draw, both players lose 1 life
-		Player1Data.LifeLeft--;
-		Player2Data.LifeLeft--;
+		Player1Data->DecrementLifeLeft();
+		Player2Data->DecrementLifeLeft();
 	}
 
 	// Check if the match should end
-	if (Player1Data.LifeLeft == 0 || Player2Data.LifeLeft == 0)
+	if (Player1Data->GetLifeLeft() == 0 || Player2Data->GetLifeLeft() == 0)
 	{
 		FinalMatchResult = RoundResult;
 		bMatchEnded = true;

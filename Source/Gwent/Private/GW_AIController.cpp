@@ -6,6 +6,7 @@
 #include "GW_FuncLib.h"
 #include "GW_GameMode.h"
 #include "Card/GW_CardBase.h"
+#include "Data/GW_PlayerData.h"
 #include "Row/GW_PlayerHand.h"
 
 /*	Current AI Behaviour:
@@ -48,7 +49,7 @@ void AGW_AIController::StartTurn()
 void AGW_AIController::MakeDecision()
 {
 	// if no cards left in the hand, pass your turn
-	if (bReadyToPass || GameMode->Player2Data.HandSize == 0)
+	if (bReadyToPass || GameMode->Player2Data->GetHandSize() == 0)
 	{
 		GameMode->PlayerPassedTurn(PlayerControllerID);
 	}
@@ -58,7 +59,7 @@ void AGW_AIController::MakeDecision()
 	}
 
 	// if opponent has passed, ready yourself to pass next turn (play a card now and pass next turn)
-	if (GameMode->Player1Data.PassedTurn)
+	if (GameMode->Player1Data->IsTurnPassed())
 	{
 		bReadyToPass = true;
 	}

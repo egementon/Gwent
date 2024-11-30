@@ -19,20 +19,6 @@ enum class EGamePhase
 	MatchEnd
 };
 
-struct FPlayerData
-{
-	int32 HandSize = 0; // number of cards in hand currently
-	int32 Score = 0; // sum of 3 rows powers
-	int32 LifeLeft = 2; // players start with 2 lives
-	bool PassedTurn = false;
-	
-	void ResetDataForNextRound()
-	{
-		Score = 0;
-		PassedTurn = false;
-	}
-};
-
 UENUM(BlueprintType)
 enum class EMatchResult : uint8
 {

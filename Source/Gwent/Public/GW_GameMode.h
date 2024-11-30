@@ -7,6 +7,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GW_GameMode.generated.h"
 
+class UGW_PlayerData;
 class AGW_PlayerController;
 class AGW_AIController;
 class AGW_WeatherRow;
@@ -20,7 +21,7 @@ class AGW_UnitRow;
 /**
  * 
  */
-DECLARE_MULTICAST_DELEGATE(FOnNewRoundStarted);
+DECLARE_MULTICAST_DELEGATE(FOnNewRoundStartedSignature);
 
 UCLASS()
 class GWENT_API AGW_GameMode : public AGameModeBase
@@ -53,14 +54,14 @@ public:
 	void PlayerPassedTurn(EPlayerID PlayerID);
 
 	// PlayerData
-	FPlayerData Player1Data;
-	FPlayerData Player2Data;
+	UPROPERTY() UGW_PlayerData* Player1Data;
+	UPROPERTY() UGW_PlayerData* Player2Data;
 	
 	void SetPlayerHandSize(EPlayerID PlayerID, int32 HandSize);
 	void UpdatePlayerScore(EPlayerID PlayerID);
 	int32 CalculateScore(TArray<AGW_UnitRow*> RowArray);
 
-	FOnNewRoundStarted OnNewRoundStarted;
+	FOnNewRoundStartedSignature OnNewRoundStarted;
 
 	
 protected:

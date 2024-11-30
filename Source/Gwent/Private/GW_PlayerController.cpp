@@ -8,6 +8,7 @@
 #include "GW_FuncLib.h"
 #include "GW_GameMode.h"
 #include "Camera/CameraActor.h"
+#include "Data/GW_PlayerData.h"
 #include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -21,7 +22,7 @@ AGW_PlayerController::AGW_PlayerController()
 
 void AGW_PlayerController::StartTurn()
 {
-    if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data.PassedTurn)
+    if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data->IsTurnPassed())
     {
         OnPassedTurn();
     }
@@ -80,7 +81,7 @@ void AGW_PlayerController::OnClicked()
             SelectedCard->DetachFromOwnerRow();
             SelectedCard->SetOwnerRow(SelectedRow, true);
 
-            if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data.HandSize == 0)
+            if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data->GetHandSize() == 0)
             {
                 UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
             }
