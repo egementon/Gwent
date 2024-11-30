@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "GW_GameHUDWidget.generated.h"
 
+class UW_PlayerData;
+class UW_LifeCount;
+class UImage;
 class UTextBlock;
 class UGW_PlayerData;
 /**
@@ -20,21 +23,9 @@ public:
 	void UpdateUI(UGW_PlayerData* UpdatedPlayerData, int32 PlayerID);
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Player1ScoreText;
+	UW_PlayerData* Player1DataWidget;
 
 	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Player2ScoreText;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Player1HandSizeText;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Player2HandSizeText;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Player1LivesText;
-
-	UPROPERTY(meta = (BindWidget))
-	UTextBlock* Player2LivesText;
+	UW_PlayerData* Player2DataWidget;
 	
 };
