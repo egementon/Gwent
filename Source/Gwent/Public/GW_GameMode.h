@@ -57,6 +57,9 @@ public:
 	UPROPERTY() UGW_PlayerData* Player1Data;
 	UPROPERTY() UGW_PlayerData* Player2Data;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FName, UTexture2D*> PlayerAvatarMap;
+	
 	void SetPlayerHandSize(EPlayerID PlayerID, int32 HandSize);
 	void UpdatePlayerScore(EPlayerID PlayerID);
 	int32 CalculateScore(TArray<AGW_UnitRow*> RowArray);

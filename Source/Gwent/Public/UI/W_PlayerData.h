@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "W_PlayerData.generated.h"
 
+class UImage;
 class UGW_PlayerData;
 class UW_LifeCount;
 class UTextBlock;
@@ -22,6 +23,8 @@ public:
 	
 	void UpdateUI(UGW_PlayerData* UpdatedPlayerData);
 
+	void SetRandomAvatar();
+
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PlayerScoreText;
 
@@ -36,8 +39,11 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UW_LifeCount* PlayerLivesWidget;
-
+	
 	UPROPERTY(EditAnywhere)
 	FText PlayerName = FText::FromString("Geralt");
 
+	UPROPERTY(meta = (BindWidget))
+	UImage* PlayerImage;
+	
 };
