@@ -22,6 +22,7 @@ class AGW_UnitRow;
  * 
  */
 DECLARE_MULTICAST_DELEGATE(FOnNewRoundStartedSignature);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAnnouncementMessage, const FString&);
 
 UCLASS()
 class GWENT_API AGW_GameMode : public AGameModeBase
@@ -65,6 +66,7 @@ public:
 	int32 CalculateScore(TArray<AGW_UnitRow*> RowArray);
 
 	FOnNewRoundStartedSignature OnNewRoundStarted;
+	FOnAnnouncementMessage OnAnnouncementMessage;
 
 	
 protected:

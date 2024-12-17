@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GW_GameHUDWidget.generated.h"
 
+class UW_AnnounceState;
 class UW_PlayerData;
 class UW_LifeCount;
 class UImage;
@@ -27,5 +28,8 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UW_PlayerData* Player2DataWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UW_AnnounceState* AnnounceStateWidget;
 	
 };

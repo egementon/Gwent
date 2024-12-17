@@ -93,7 +93,16 @@ void AGW_GameMode::EndPlayerTurn(EPlayerID PlayerID)
 
 void AGW_GameMode::PlayerPassedTurn(EPlayerID PlayerID)
 {
-	PlayerID == EPlayerID::Player1 ? Player1Data->SetPassedTurn(true) : Player2Data->SetPassedTurn(true);
+	if (PlayerID == EPlayerID::Player1)
+	{
+		Player1Data->SetPassedTurn(true);
+		OnAnnouncementMessage.Broadcast("Round passed");
+	}
+	else
+	{
+		Player2Data->SetPassedTurn(true);
+		OnAnnouncementMessage.Broadcast("Your opponent has passed");
+	}
 
 	// check end condition, if both passed turn then end the game/round
 	if (Player1Data->IsTurnPassed() && Player2Data->IsTurnPassed())
@@ -158,8 +167,11 @@ void AGW_GameMode::BeginPlay()
 		Player2Data->OnPlayerDataChanged.AddDynamic(GameHUD, &AGW_HUD::UpdatePlayerData);
 	}
 
-	// start the game
-	SetGamePhase(EGamePhase::Start);
+	// start the game with a delay
+	GetWorldTimerManager().SetTimer(WaitPhaseTimer, [this]()
+	{
+		SetGamePhase(EGamePhase::Start);
+	}, 1.f, false);
 }
 
 void AGW_GameMode::GenerateRandomCardsForDeck()
@@ -269,6 +281,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			}
 
 			OnNewRoundStarted.Broadcast();
+			OnAnnouncementMessage.Broadcast("Round Start");
 			break;
 		}
 
@@ -278,6 +291,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			UKismetSystemLibrary::PrintString(this, "GamePhase = Player1Turn", true, true, FColor::Green, 30.f, FName("phase"));
 
 			PlayerController->StartTurn();
+			OnAnnouncementMessage.Broadcast("Your turn!");
 			break;
 		}
 		
@@ -303,6 +317,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 				UKismetSystemLibrary::PrintString(this, "No AI Controller");
 				SetGamePhase(EGamePhase::Player1Turn);
 			}
+			OnAnnouncementMessage.Broadcast("Opponent's turn");
 			break;
 		}
 
@@ -317,6 +332,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			UKismetSystemLibrary::PrintString(this, 
 		"Round Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
 						   ->GetNameStringByValue(static_cast<int64>(RoundResult)), true, true, FColor::Green, 5.f, FName("result"));
+
 			
 			if (bMatchEnded)
 			{
@@ -333,6 +349,22 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			false);
 			
 				bIsFirstRound = false;
+			}
+
+			// show Announcement Message
+			switch (RoundResult)
+			{
+			case EMatchResult::Player1Wins:
+				OnAnnouncementMessage.Broadcast("You won the round!");
+				break;
+
+			case EMatchResult::Player2Wins:
+				OnAnnouncementMessage.Broadcast("Your opponent won the round");
+				break;
+
+			case EMatchResult::Draw:
+				OnAnnouncementMessage.Broadcast("Draw");
+				break;
 			}
 			
 			break;
