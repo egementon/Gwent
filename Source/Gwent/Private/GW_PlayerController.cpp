@@ -24,7 +24,7 @@ void AGW_PlayerController::StartTurn()
 {
     if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data->IsTurnPassed())
     {
-        OnPassedTurn();
+        OnPassedTurnTriggered();
     }
 }
 
@@ -36,7 +36,9 @@ void AGW_PlayerController::SetupInputComponent()
     {
         // Bind Input Actions
         EnhancedInput->BindAction(LeftClickAction, ETriggerEvent::Started, this, &AGW_PlayerController::OnClicked);
-        EnhancedInput->BindAction(HoldSpaceAction, ETriggerEvent::Triggered, this, &AGW_PlayerController::OnPassedTurn);
+        EnhancedInput->BindAction(HoldSpaceAction, ETriggerEvent::Started, this, &AGW_PlayerController::OnHoldPassTurnStarted);
+        EnhancedInput->BindAction(HoldSpaceAction, ETriggerEvent::Canceled, this, &AGW_PlayerController::OnHoldPassTurnCancelled);
+        EnhancedInput->BindAction(HoldSpaceAction, ETriggerEvent::Triggered, this, &AGW_PlayerController::OnPassedTurnTriggered);
     }
 }
 
@@ -106,7 +108,17 @@ void AGW_PlayerController::OnClicked()
     }
 }
 
-void AGW_PlayerController::OnPassedTurn()
+void AGW_PlayerController::OnHoldPassTurnStarted()
+{
+    OnHoldPassTurn.Broadcast(true);
+}
+
+void AGW_PlayerController::OnHoldPassTurnCancelled()
+{
+    OnHoldPassTurn.Broadcast(false);
+}
+
+void AGW_PlayerController::OnPassedTurnTriggered()
 {
     UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
 }

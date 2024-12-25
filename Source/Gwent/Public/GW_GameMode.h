@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GW_Types.h"
 #include "GameFramework/GameModeBase.h"
+#include "UI/GW_HUD.h"
 #include "GW_GameMode.generated.h"
 
 class UGW_PlayerData;
@@ -21,8 +22,10 @@ class AGW_UnitRow;
 /**
  * 
  */
+typedef TMap<FName, TArray<int32>> FRoundScoreDataMap;
 DECLARE_MULTICAST_DELEGATE(FOnNewRoundStartedSignature);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnAnnouncementMessage, const FString&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAnnouncementMessageSignature, const FString&);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnMatchEndSignature, EMatchResult, FRoundScoreDataMap);
 
 UCLASS()
 class GWENT_API AGW_GameMode : public AGameModeBase
@@ -57,6 +60,9 @@ public:
 	// PlayerData
 	UPROPERTY() UGW_PlayerData* Player1Data;
 	UPROPERTY() UGW_PlayerData* Player2Data;
+
+	// RoundScoreData
+	TMap<FName, TArray<int32>> RoundScoreData;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FName, UTexture2D*> PlayerAvatarMap;
@@ -66,8 +72,8 @@ public:
 	int32 CalculateScore(TArray<AGW_UnitRow*> RowArray);
 
 	FOnNewRoundStartedSignature OnNewRoundStarted;
-	FOnAnnouncementMessage OnAnnouncementMessage;
-
+	FOnAnnouncementMessageSignature OnAnnouncementMessage;
+	FOnMatchEndSignature OnMatchEnd;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -82,6 +88,8 @@ protected:
 	EMatchResult DetermineResult(bool& bMatchEnded);
 
 	void ClearAllRows();
+
+	void OnHUDReady(AGW_HUD* HUD);
 
 	UPROPERTY()
 	AGW_PlayerController* PlayerController; // Player 1
@@ -112,9 +120,9 @@ protected:
 	
 	EGamePhase CurrentGamePhase = EGamePhase::Start;
 	
-	EPlayerID LastPlayedID = EPlayerID::Player1; // ID of the last player who played card
-
-	bool bIsFirstRound = true;
+	EPlayerID LastPlayedID = EPlayerID::Player2; // ID of the last player who played card
+	
+	int32 RoundIndex = 0;
 
 	EMatchResult FinalMatchResult = EMatchResult::Draw;
 

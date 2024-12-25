@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "W_PlayerData.generated.h"
 
+class UBorder;
 class UImage;
 class UGW_PlayerData;
 class UW_LifeCount;
@@ -23,7 +24,8 @@ public:
 	
 	void UpdateUI(UGW_PlayerData* UpdatedPlayerData);
 
-	void SetRandomAvatar();
+protected:
+	void InitializePlayerData(const UGW_PlayerData* InitializedPlayerData) const;
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* PlayerScoreText;
@@ -45,5 +47,10 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UImage* PlayerImage;
+
+	UPROPERTY(meta = (BindWidget))
+	UBorder* HighlightBorder;
+
+	bool bInitialized = false;
 	
 };

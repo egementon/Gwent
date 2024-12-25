@@ -15,10 +15,15 @@ UCLASS()
 class GWENT_API AGW_HUD : public AHUD
 {
 	GENERATED_BODY()
+	DECLARE_MULTICAST_DELEGATE_OneParam(FOnHUDReady, AGW_HUD*);
 
 public:
 	UFUNCTION()
 	void UpdatePlayerData(UGW_PlayerData* UpdatedPlayerData, int32 PlayerID);
+
+	UGW_GameHUDWidget* GetGameHUDWidget();
+
+	FOnHUDReady OnHUDReady;
 	
 protected:
 	virtual void BeginPlay() override;

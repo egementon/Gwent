@@ -6,6 +6,8 @@
 #include "Blueprint/UserWidget.h"
 #include "GW_GameHUDWidget.generated.h"
 
+class UW_PassProgressBar;
+class UW_WinLoseScreen;
 class UW_AnnounceState;
 class UW_PlayerData;
 class UW_LifeCount;
@@ -23,6 +25,9 @@ class GWENT_API UGW_GameHUDWidget : public UUserWidget
 public:
 	void UpdateUI(UGW_PlayerData* UpdatedPlayerData, int32 PlayerID);
 
+protected:
+	void SetPassProgressBarVisibility(UGW_PlayerData* UpdatedPlayerData);
+	
 	UPROPERTY(meta = (BindWidget))
 	UW_PlayerData* Player1DataWidget;
 
@@ -31,5 +36,11 @@ public:
 
 	UPROPERTY(meta = (BindWidget))
 	UW_AnnounceState* AnnounceStateWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UW_WinLoseScreen* WinLoseScreenWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UW_PassProgressBar* PassProgressBarWidget;
 	
 };

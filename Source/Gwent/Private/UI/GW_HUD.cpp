@@ -18,6 +18,7 @@ void AGW_HUD::BeginPlay()
 		if (GameHUDWidget)
 		{
 			GameHUDWidget->AddToViewport();
+			OnHUDReady.Broadcast(this);
 		}
 	}
 }
@@ -29,4 +30,9 @@ void AGW_HUD::UpdatePlayerData(UGW_PlayerData* UpdatedPlayerData, int32 PlayerID
 	{
 		GameHUDWidget->UpdateUI(UpdatedPlayerData, PlayerID);
 	}
+}
+
+UGW_GameHUDWidget* AGW_HUD::GetGameHUDWidget()
+{
+	return GameHUDWidget;
 }

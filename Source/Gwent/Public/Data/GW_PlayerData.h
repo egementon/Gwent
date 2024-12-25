@@ -21,6 +21,7 @@ public:
 	{
 		UGW_PlayerData* NewData = NewObject<UGW_PlayerData>(Outer);
 		NewData->PlayerID = PlayerID;
+		NewData->SetRandomNameAndAvatar();
 		return NewData;
 	}
 
@@ -30,6 +31,11 @@ public:
 		int32 Score = 0; // sum of 3 rows powers
 		int32 LifeLeft = 2; // players start with 2 lives
 		bool PassedTurn = false;
+		bool IsPlayerTurn = false;
+
+		// for widgets
+		FName PlayerName = "Geralt";
+		UTexture2D* PlayerAvatar = nullptr;
 	};
 	
 	FPlayerData Data;
@@ -40,6 +46,7 @@ public:
 	void SetScore(int32 NewScore);
 	void SetLifeLeft(int32 NewLifeLeft);
 	void SetPassedTurn(bool bNewPassedTurn);
+	void SetIsPlayerTurn(bool bNewIsPlayerTurn);
 	
 	void ResetDataForNextRound();
 	void DecrementLifeLeft();
@@ -49,8 +56,11 @@ public:
 	int32 GetScore() const;
 	int32 GetLifeLeft() const;
 	bool IsTurnPassed() const;
+	bool IsPlayerTurn() const;
 
 protected:
 	int32 PlayerID = 0;
+	
+	void SetRandomNameAndAvatar();
 
 };

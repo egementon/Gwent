@@ -10,6 +10,9 @@
 class UInputAction;
 class AGW_UnitRow;
 class AGW_CardBase;
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHoldPassTurnSignature, bool bHoldStarted);
+
 /**
  * 
  */
@@ -21,6 +24,8 @@ class GWENT_API AGW_PlayerController : public APlayerController
 public:
 	AGW_PlayerController();
 	void StartTurn();
+	
+	FOnHoldPassTurnSignature OnHoldPassTurn;
 
 protected:
 	// Input Actions
@@ -43,10 +48,13 @@ protected:
 	EPlayerID PlayerControllerID = EPlayerID::Player1;
 
 	UPROPERTY() AGW_CardBase* SelectedCard;
+
 	
 private:
 	void OnClicked();
-	void OnPassedTurn();
+	void OnHoldPassTurnStarted();
+	void OnHoldPassTurnCancelled();
+	void OnPassedTurnTriggered();
 	AGW_CardBase* GetCardUnderCursor();
 	AGW_UnitRow* GetRowUnderCursor(AGW_CardBase* CardToCheck);
 

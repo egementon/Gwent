@@ -3,6 +3,9 @@
 
 #include "Data/GW_PlayerData.h"
 
+#include "GW_FuncLib.h"
+#include "GW_GameMode.h"
+
 void UGW_PlayerData::SetHandSize(int32 NewHandSize)
 {
 	if (Data.HandSize != NewHandSize)
@@ -39,6 +42,15 @@ void UGW_PlayerData::SetPassedTurn(bool bNewPassedTurn)
 	}
 }
 
+void UGW_PlayerData::SetIsPlayerTurn(bool bNewIsPlayerTurn)
+{
+	if (Data.IsPlayerTurn != bNewIsPlayerTurn)
+	{
+		Data.IsPlayerTurn = bNewIsPlayerTurn;
+		OnPlayerDataChanged.Broadcast(this, PlayerID);
+	}
+}
+
 void UGW_PlayerData::ResetDataForNextRound()
 {
 	Data.Score = 0;
@@ -70,4 +82,36 @@ int32 UGW_PlayerData::GetLifeLeft() const
 bool UGW_PlayerData::IsTurnPassed() const
 {
 	return Data.PassedTurn;
+}
+
+bool UGW_PlayerData::IsPlayerTurn() const
+{
+	return Data.IsPlayerTurn;
+}
+
+void UGW_PlayerData::SetRandomNameAndAvatar()
+{
+	// Get reference to the GameMode and PlayerAvatarMap
+	AGW_GameMode* GameMode = UGW_FuncLib::GetGameMode(GetWorld());
+	if (!GameMode || GameMode->PlayerAvatarMap.Num() == 0)
+	{
+		return;
+	}
+
+	TMap<FName, UTexture2D*>& PlayerDataMap = GameMode->PlayerAvatarMap;
+
+	TArray<FName> Keys;
+	PlayerDataMap.GetKeys(Keys);
+	const int32 RandomIndex = FMath::RandRange(0, Keys.Num() - 1);
+	const FName RandomKey = Keys[RandomIndex];
+
+	Data.PlayerName = RandomKey;
+
+	if (UTexture2D* SelectedTexture = PlayerDataMap.FindRef(RandomKey))
+	{
+		Data.PlayerAvatar = SelectedTexture;
+	}
+	
+	// Remove selected key from the map to ensure it won't be reused
+	PlayerDataMap.Remove(RandomKey);
 }

@@ -13,7 +13,9 @@
 #include "Row/GW_Graveyard.h"
 #include "Row/GW_PlayerHand.h"
 #include "Row/GW_WeatherRow.h"
+#include "UI/GW_GameHUDWidget.h"
 #include "UI/GW_HUD.h"
+#include "UI/W_WinLoseScreen.h"
 
 
 void AGW_GameMode::RegisterRow(AGW_RowBase* NewRow)
@@ -165,7 +167,13 @@ void AGW_GameMode::BeginPlay()
 	{
 		Player1Data->OnPlayerDataChanged.AddDynamic(GameHUD, &AGW_HUD::UpdatePlayerData);
 		Player2Data->OnPlayerDataChanged.AddDynamic(GameHUD, &AGW_HUD::UpdatePlayerData);
+		GameHUD->OnHUDReady.AddUObject(this, &AGW_GameMode::OnHUDReady);
 	}
+	
+	// Initialize RoundScoreData map
+	RoundScoreData.Add(Player1Data->Data.PlayerName, TArray({0, 0, 0}));
+	RoundScoreData.Add(Player2Data->Data.PlayerName, TArray({0, 0, 0}));
+
 
 	// start the game with a delay
 	GetWorldTimerManager().SetTimer(WaitPhaseTimer, [this]()
@@ -241,7 +249,7 @@ void AGW_GameMode::GiveDeckCardsToHands()
 	{
 		DeckP1->GiveRandomCardsToHand(InitialHandSize);
 		DeckP2->GiveRandomCardsToHand(InitialHandSize);
-		SetGamePhase(EGamePhase::Player1Turn);
+		StartPlayerTurn();
 	}
 }
 
@@ -254,8 +262,8 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	case EGamePhase::Start:
 		{
 			UKismetSystemLibrary::PrintString(this, "GamePhase = Start", true, true, FColor::Green, 30.f, FName("phase"));
-
-			if (bIsFirstRound)
+			// if it is first round
+			if (RoundIndex == 0)
 			{
 				if (bSpawnAIController)
 				{
@@ -277,7 +285,13 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 				Player2Data->ResetDataForNextRound();
 
 				ClearAllRows();
-				SetGamePhase(EGamePhase::Player1Turn);
+
+				GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer,[this]()
+				{
+					StartPlayerTurn();
+				},
+			1.f,
+			false);
 			}
 
 			OnNewRoundStarted.Broadcast();
@@ -336,7 +350,13 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			
 			if (bMatchEnded)
 			{
-				SetGamePhase(EGamePhase::MatchEnd);
+				// end the game after a wait
+				GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer,[this]()
+				{
+					SetGamePhase(EGamePhase::MatchEnd);
+				},
+			2.f,
+			false);
 			}
 			else
 			{
@@ -347,9 +367,12 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 				},
 			5.f,
 			false);
-			
-				bIsFirstRound = false;
 			}
+
+			RoundScoreData[Player1Data->Data.PlayerName][RoundIndex] = Player1Data->Data.Score;
+			RoundScoreData[Player2Data->Data.PlayerName][RoundIndex] = Player2Data->Data.Score;
+
+			RoundIndex++;
 
 			// show Announcement Message
 			switch (RoundResult)
@@ -379,7 +402,10 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 		"Final Match Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
 						   ->GetNameStringByValue(static_cast<int64>(FinalMatchResult)), true, true, FColor::Green, 30.f, FName("result"));
 
-			//TODO: Win-Lose screens
+			// show Win-Lose Screen
+			OnMatchEnd.Broadcast(FinalMatchResult, RoundScoreData);
+
+			RoundIndex = 0;
 			break;
 		}
 	}
@@ -396,14 +422,17 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 void AGW_GameMode::StartPlayerTurn()
 {
 	// decide which player should play next turn
-	if (LastPlayedID == EPlayerID::Player1)
-	{
-		SetGamePhase(EGamePhase::Player2Turn);
-	}
-	else if (LastPlayedID == EPlayerID::Player2)
+	const bool bIsP1Turn = LastPlayedID == EPlayerID::Player2;
+	if (bIsP1Turn)
 	{
 		SetGamePhase(EGamePhase::Player1Turn);
 	}
+	else
+	{
+		SetGamePhase(EGamePhase::Player2Turn);
+	}
+	Player1Data->SetIsPlayerTurn(bIsP1Turn);
+	Player2Data->SetIsPlayerTurn(!bIsP1Turn);
 }
 
 EMatchResult AGW_GameMode::DetermineResult(bool& bMatchEnded)
@@ -456,4 +485,11 @@ void AGW_GameMode::ClearAllRows()
 	{
 		Card->DestroySelf();
 	}
+}
+
+void AGW_GameMode::OnHUDReady(AGW_HUD* HUD)
+{
+	// initialize player data widgets
+	HUD->UpdatePlayerData(Player1Data, 1);
+	HUD->UpdatePlayerData(Player2Data, 2);
 }
