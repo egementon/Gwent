@@ -111,16 +111,31 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bSpawnAIController = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(EditCondition = "bSpawnAIController"))
-	float AIWaitDuration = 2.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bDebug_FilterCards = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration", meta=(EditCondition = "bSpawnAIController"))
+	float AIWaitDuration = 2.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
+	float WaitPhaseDuration = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
+	float StartGameWaitDuration = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
+	float RestartGameWaitDuration = 1.f;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
+	float RoundEndWaitDuration = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
+	float EndGameWaitDuration = 2.f;
 	
 	EGamePhase CurrentGamePhase = EGamePhase::Start;
 	
-	EPlayerID LastPlayedID = EPlayerID::Player2; // ID of the last player who played card
+	EPlayerID LastPlayedPlayerID = EPlayerID::Player2;
 	
 	int32 RoundIndex = 0;
 

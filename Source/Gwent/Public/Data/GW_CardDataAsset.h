@@ -33,6 +33,8 @@ enum class ECardAbility : uint8
 	MoraleBoost  UMETA(DisplayName = "Morale Boost"),
 	// when played, automatically find any cards with the same name in your deck and play them instantly.
 	Muster       UMETA(DisplayName = "Muster"),
+	// allows you to choose one card from your graveyard and play it instantly (no Heroes or Special Cards)
+	Medic        UMETA(DisplayName = "Medic"),
 	// reduces the strength of all cards of a given row on the battlefield, including your own.
 	BadWeather   UMETA(DisplayName = "Bad Weather"),
 	// removes all Weather Card effects. 

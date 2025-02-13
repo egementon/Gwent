@@ -7,25 +7,19 @@
 #include "EnhancedInputSubsystems.h"
 #include "GW_FuncLib.h"
 #include "GW_GameMode.h"
+#include "Blueprint/UserWidget.h"
 #include "Camera/CameraActor.h"
 #include "Data/GW_PlayerData.h"
 #include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/W_MedicAbility.h"
 
 
 AGW_PlayerController::AGW_PlayerController()
 {
     SelectedCard = nullptr;
     bShowMouseCursor = true;
-}
-
-void AGW_PlayerController::StartTurn()
-{
-    if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data->IsTurnPassed())
-    {
-        OnPassedTurnTriggered();
-    }
 }
 
 void AGW_PlayerController::SetupInputComponent()
@@ -42,16 +36,27 @@ void AGW_PlayerController::SetupInputComponent()
     }
 }
 
-void AGW_PlayerController::BeginPlay()
+void AGW_PlayerController::SetPlayerTurnInputMapping()
 {
-    if (APlayerController* PC = Cast<APlayerController>(this))
+    if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
     {
-        UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer());
-        if (Subsystem)
+        Subsystem->ClearAllMappings(); // Remove all existing mappings
+
+        if (bIsPlayerControllable)
         {
-            Subsystem->AddMappingContext(PlayerInputMapping, 0);
+            Subsystem->AddMappingContext(PlayerTurnMappingContext, 1); // Enable full player control
+        }
+        else
+        {
+            Subsystem->AddMappingContext(NonPlayerTurnMappingContext, 1); // Enable only limited control
         }
     }
+}
+
+void AGW_PlayerController::BeginPlay()
+{
+    // start the game with non-PlayerTurn input mapping
+    SetPlayerTurnInputMapping(); 
     
     // Set the player's view to the camera actor
     APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
@@ -63,13 +68,33 @@ void AGW_PlayerController::BeginPlay()
             PlayerController->SetViewTarget(CameraActor);
         }
     }
+
+    GameMode = UGW_FuncLib::GetGameMode(GetWorld());
+    GameMode->Player1Data->OnPlayerDataChanged.AddDynamic(this, &AGW_PlayerController::OnPlayerDataChanged);
+}
+
+void AGW_PlayerController::OnPlayerDataChanged(UGW_PlayerData* UpdatedPlayerData, int32 PlayerID)
+{
+    if (PlayerID == 1)
+    {
+        bIsPlayerControllable = UpdatedPlayerData->Data.IsPlayerTurn && !UpdatedPlayerData->Data.PassedTurn;
+        SetPlayerTurnInputMapping();
+    }
+}
+
+void AGW_PlayerController::StartTurn()
+{
+    if (GameMode->Player1Data->IsTurnPassed())
+    {
+        OnPassedTurnTriggered();
+    }
 }
 
 void AGW_PlayerController::OnClicked()
 {
     UGameplayStatics::PlaySound2D(this, ClickSFX);
 
-    if (!UGW_FuncLib::GetGameMode(GetWorld())->IsMyTurn(PlayerControllerID))
+    if (!bIsPlayerControllable)
     {
         return;
     }
@@ -80,18 +105,20 @@ void AGW_PlayerController::OnClicked()
         
         if (SelectedRow && SelectedRow->IsValidRowForCard(SelectedCard))
         {
+            SelectedCard->OnCardAbilityEnded.AddLambda([this]()
+            {
+                if (GameMode->Player1Data->GetHandSize() == 0)
+                {
+                    GameMode->PlayerPassedTurn(PlayerControllerID);
+                }
+                else
+                {
+                    GameMode->EndPlayerTurn(PlayerControllerID);
+                }
+            });
+            
             SelectedCard->DetachFromOwnerRow();
             SelectedCard->SetOwnerRow(SelectedRow, true);
-
-            if (UGW_FuncLib::GetGameMode(GetWorld())->Player1Data->GetHandSize() == 0)
-            {
-                UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
-            }
-            else
-            {
-                // end the turn
-                UGW_FuncLib::GetGameMode(GetWorld())->EndPlayerTurn(PlayerControllerID);
-            }
         }
         
         SelectedCard->HighlightCard(false);
@@ -120,9 +147,8 @@ void AGW_PlayerController::OnHoldPassTurnCancelled()
 
 void AGW_PlayerController::OnPassedTurnTriggered()
 {
-    UGW_FuncLib::GetGameMode(GetWorld())->PlayerPassedTurn(PlayerControllerID);
+    GameMode->PlayerPassedTurn(PlayerControllerID);
 }
-
 
 AGW_UnitRow* AGW_PlayerController::GetRowUnderCursor(AGW_CardBase* CardToCheck)
 {
@@ -163,4 +189,14 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
     }
     
     return nullptr;
+}
+
+void AGW_PlayerController::ShowMedicAbilityWidget(UGW_AbilityMedic* OwningAbility)
+{
+    MedicAbilityWidget = CreateWidget<UW_MedicAbility>(this, MedicAbilityWidgetClass);
+    MedicAbilityWidget->SetMedicAbility(OwningAbility);
+    if (MedicAbilityWidget)
+    {
+        MedicAbilityWidget->AddToViewport();
+    }
 }

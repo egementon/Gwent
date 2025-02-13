@@ -89,7 +89,7 @@ bool AGW_GameMode::IsMyTurn(const EPlayerID PlayerID) const
 
 void AGW_GameMode::EndPlayerTurn(EPlayerID PlayerID)
 {
-	LastPlayedID = PlayerID;
+	LastPlayedPlayerID = PlayerID;
 	SetGamePhase(EGamePhase::Wait);
 }
 
@@ -113,7 +113,7 @@ void AGW_GameMode::PlayerPassedTurn(EPlayerID PlayerID)
 		{
 			SetGamePhase(EGamePhase::RoundEnd);
 		},
-	1.f,
+	RoundEndWaitDuration,
 	false);
 	}
 	else
@@ -179,7 +179,7 @@ void AGW_GameMode::BeginPlay()
 	GetWorldTimerManager().SetTimer(WaitPhaseTimer, [this]()
 	{
 		SetGamePhase(EGamePhase::Start);
-	}, 1.f, false);
+	}, StartGameWaitDuration, false);
 }
 
 void AGW_GameMode::GenerateRandomCardsForDeck()
@@ -290,7 +290,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 				{
 					StartPlayerTurn();
 				},
-			1.f,
+			StartGameWaitDuration,
 			false);
 			}
 
@@ -313,7 +313,9 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 		{
 			UKismetSystemLibrary::PrintString(this, "GamePhase = Wait", true, true, FColor::Green, 30.f, FName("phase"));
 
-			GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer, this, &AGW_GameMode::StartPlayerTurn, 1.f);
+			Player1Data->SetIsPlayerTurn(false);
+			Player2Data->SetIsPlayerTurn(false);
+			GetWorld()->GetTimerManager().SetTimer(WaitPhaseTimer, this, &AGW_GameMode::StartPlayerTurn, WaitPhaseDuration);
 			break;
 		}
 
@@ -355,7 +357,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 				{
 					SetGamePhase(EGamePhase::MatchEnd);
 				},
-			2.f,
+			EndGameWaitDuration,
 			false);
 			}
 			else
@@ -365,10 +367,12 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 				{
 					SetGamePhase(EGamePhase::Start);
 				},
-			5.f,
+			RestartGameWaitDuration,
 			false);
 			}
 
+			Player1Data->SetIsPlayerTurn(false);
+			Player2Data->SetIsPlayerTurn(false);
 			RoundScoreData[Player1Data->Data.PlayerName][RoundIndex] = Player1Data->Data.Score;
 			RoundScoreData[Player2Data->Data.PlayerName][RoundIndex] = Player2Data->Data.Score;
 
@@ -422,7 +426,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 void AGW_GameMode::StartPlayerTurn()
 {
 	// decide which player should play next turn
-	const bool bIsP1Turn = LastPlayedID == EPlayerID::Player2;
+	const bool bIsP1Turn = LastPlayedPlayerID == EPlayerID::Player2;
 	if (bIsP1Turn)
 	{
 		SetGamePhase(EGamePhase::Player1Turn);

@@ -2,6 +2,9 @@
 
 
 #include "Gwent/Public/Card/GW_CardBase.h"
+
+#include "GW_FuncLib.h"
+#include "GW_GameMode.h"
 #include "Ability/Core/GW_AbilityBase.h"
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
@@ -57,6 +60,26 @@ ECardAbility AGW_CardBase::GetCardAbility() const
 	return CardAbility;
 }
 
+UTexture2D* AGW_CardBase::GetCardImage() const
+{
+	return CardImage;
+}
+
+int32 AGW_CardBase::GetBaseCardPower() const
+{
+	return BaseCardPower;
+}
+
+bool AGW_CardBase::GetIsSelectable()
+{
+	return bIsSelectable;
+}
+
+bool AGW_CardBase::IsWeatherCard()
+{
+	return GetCardAbility() == ECardAbility::BadWeather || GetCardAbility() == ECardAbility::ClearWeather;
+}
+
 void AGW_CardBase::SetCardPower(int32 NewCardPower)
 {
 	if (bIsHero) return; // hero cards are immune to buff/debuffs
@@ -84,19 +107,9 @@ void AGW_CardBase::HighlightCard(bool bHighlight)
 	CardMesh->SetRenderCustomDepth(bHighlight);
 }
 
-int32 AGW_CardBase::GetBaseCardPower() const
+void AGW_CardBase::EndCardAbility()
 {
-	return BaseCardPower;
-}
-
-bool AGW_CardBase::GetIsSelectable()
-{
-	return bIsSelectable;
-}
-
-bool AGW_CardBase::IsWeatherCard()
-{
-	return GetCardAbility() == ECardAbility::BadWeather || GetCardAbility() == ECardAbility::ClearWeather;
+	OnCardAbilityEnded.Broadcast();
 }
 
 void AGW_CardBase::InitializeCardData(FCardData NewCardData)
@@ -171,7 +184,7 @@ void AGW_CardBase::BeginPlay()
 		CardMesh->SetMaterial(0, DynamicMaterial);
 	}
 
-	// Card Power is already written in Hero Cards. Also some cards do not have any power to be written (0)
+	// Card Power is already written in Hero Cards. Also, some cards do not have any power to be written (0)
 	if (CardPower == 0 || bIsHero) //TODO: create a new boolean for Powerless cards instead of giving them 0 power
 	{
 		CardPowerText->SetVisibility(false);
@@ -185,12 +198,22 @@ void AGW_CardBase::BeginPlay()
 
 void AGW_CardBase::CanActivateAbility()
 {
-	if (CardAbility == ECardAbility::NoAbility) return;
+	if (CardAbility == ECardAbility::NoAbility)
+	{
+		EndCardAbility();
+		return;
+	}
 
 	UGW_AbilityBase* Ability = UGW_AbilityManager::Get()->GetAbility(CardAbility);
 	if (Ability)
 	{
 		Ability->ActivateAbility(this);
+	}
+
+	// Only Medic cards does not end automatically, they wait for UI selection
+	if (CardAbility != ECardAbility::Medic)
+	{
+		EndCardAbility();
 	}
 }
 
@@ -207,6 +230,7 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 		{
 			CanActivateAbility();
 		}
+		
 		// play card SFX
 		if (CardSFX)
 		{
@@ -233,6 +257,40 @@ void AGW_CardBase::DetachFromOwnerRow()
 	OwnerRow->RemoveFromCardsArray(this);
 	OwnerRow = nullptr;
 	bIsSnapped = false;
+}
+
+AGW_UnitRow* AGW_CardBase::FindValidRow()
+{
+	TArray<AGW_UnitRow*> Rows;
+	AGW_UnitRow* ValidRow = nullptr;
+	
+	if (PlayerID == EPlayerID::Player1)
+	{
+		Rows = UGW_FuncLib::GetGameMode(GetWorld())->RowArrayP1;
+	}
+	else if (PlayerID == EPlayerID::Player2)
+	{
+		Rows = UGW_FuncLib::GetGameMode(GetWorld())->RowArrayP2;
+	}
+	
+	if (this->IsWeatherCard())
+	{
+		ValidRow = Cast<AGW_UnitRow>(UGW_FuncLib::GetGameMode(GetWorld())->WeatherRow);
+	}
+	else
+	{
+		// find the first valid row
+		for (AGW_UnitRow* Row : Rows)
+		{
+			if (Row->IsValidRowForCard(this))
+			{
+				ValidRow = Row;
+				break;
+			}
+		}
+	}
+	
+	return ValidRow;
 }
 
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

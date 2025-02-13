@@ -6,6 +6,7 @@
 #include "UObject/Object.h"
 #include "GW_AbilityBase.generated.h"
 
+class AGW_CardBase;
 /**
  * 
  */
@@ -15,6 +16,11 @@ class GWENT_API UGW_AbilityBase : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual void ActivateAbility(class AGW_CardBase* Card);
+	virtual void ActivateAbility(AGW_CardBase* Card);
+
+protected:
+	virtual void EndAbility();
+	
+	UPROPERTY() AGW_CardBase* OwnerCard;
 
 };

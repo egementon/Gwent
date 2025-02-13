@@ -69,33 +69,15 @@ void AGW_AIController::PlayRandomCard()
 {
 	TArray<AGW_CardBase*> HandCards = PlayerHandP2->GetSnappedCardsArray();
 	
-	AGW_UnitRow* ValidRow = nullptr;
-
 	// select random card from Hand
 	const int32 RandomIndex = FMath::RandRange(0, HandCards.Num() - 1);
 	AGW_CardBase* SelectedCard = HandCards[RandomIndex];
-
-	// place on the WeatherRow if it is a WeatherCard
-	if (SelectedCard->IsWeatherCard())
+	
+	SelectedCard->OnCardAbilityEnded.AddLambda([this]()
 	{
-		ValidRow = Cast<AGW_UnitRow>(WeatherRow);
-	}
-	else
-	{
-		// find first valid row (for now)
-		for (AGW_UnitRow* Row : RowArrayP2)
-		{
-			if (Row->IsValidRowForCard(SelectedCard))
-			{
-				ValidRow = Row;
-				break;
-			}
-		}
-	}
+		GameMode->EndPlayerTurn(PlayerControllerID);
+	});
 	
 	SelectedCard->DetachFromOwnerRow();
-	SelectedCard->SetOwnerRow(ValidRow, true);
-
-	GameMode->EndPlayerTurn(PlayerControllerID);
+	SelectedCard->SetOwnerRow(SelectedCard->FindValidRow(), true);
 }
-

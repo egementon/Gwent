@@ -13,6 +13,8 @@ class AGW_UnitRow;
 class UTextRenderComponent;
 class AGW_RowBase;
 
+DECLARE_MULTICAST_DELEGATE(FOnCardAbilityEndedSignature);
+
 UCLASS()
 class GWENT_API AGW_CardBase : public AActor
 {
@@ -24,22 +26,25 @@ public:
 	// Getters
 	AGW_RowBase* GetOwnerRow() const;
 	AGW_UnitRow* GetOwnerUnitRow() const;
-
 	FName GetCardName() const;
 	int32 GetCardPower() const;
 	EUnitRowType GetCardRowType() const;
 	ECardAbility GetCardAbility() const;
+	UTexture2D* GetCardImage() const;
 	int32 GetBaseCardPower() const;
 	bool GetIsSelectable();
 	bool IsWeatherCard();
 	
 	void SetCardPower(int32 NewCardPower);
 	void SetIsSelectable(bool bNewIsSelectable);
+	
 	void HighlightCard(bool bHighlight);
+	void EndCardAbility();
 
 	// Row Functions
 	void SetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility);
 	void DetachFromOwnerRow();
+	AGW_UnitRow* FindValidRow();
 
 	bool bIsSnapped = false;
 	bool bIsSpecial = false; // placed on the special slot on the row
@@ -57,26 +62,25 @@ public:
 	void CalculatePower();
 
 	UPROPERTY() AGW_Graveyard* Graveyard;
+
 	EPlayerID PlayerID; // Card Owner's PlayerID
-	
+
+	FOnCardAbilityEndedSignature OnCardAbilityEnded;
 	
 protected:
 	virtual void BeginPlay() override;
 
 	void CanActivateAbility();
 
+	UPROPERTY() AGW_RowBase* OwnerRow;
+	int32 BaseCardPower;
+	bool bIsSelectable = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* CardMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UTextRenderComponent* CardPowerText;
-
-	UPROPERTY()
-	AGW_RowBase* OwnerRow;
-	
-	int32 BaseCardPower;
-
-	bool bIsSelectable = false;
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")

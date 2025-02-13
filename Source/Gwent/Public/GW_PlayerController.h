@@ -4,9 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GW_Types.h"
+#include "Data/GW_PlayerData.h"
 #include "GameFramework/PlayerController.h"
 #include "GW_PlayerController.generated.h"
 
+class AGW_GameMode;
+class UInputMappingContext;
+class UGW_AbilityMedic;
+class UW_MedicAbility;
 class UInputAction;
 class AGW_UnitRow;
 class AGW_CardBase;
@@ -23,14 +28,51 @@ class GWENT_API AGW_PlayerController : public APlayerController
 
 public:
 	AGW_PlayerController();
+
 	void StartTurn();
+	
+	// UI
+	void ShowMedicAbilityWidget(UGW_AbilityMedic* OwningAbility);
 	
 	FOnHoldPassTurnSignature OnHoldPassTurn;
 
 protected:
+	virtual void SetupInputComponent() override;
+	virtual void BeginPlay() override;
+	
+	void SetPlayerTurnInputMapping();
+	
+	UFUNCTION() void OnPlayerDataChanged(UGW_PlayerData* UpdatedPlayerData, int32 PlayerID);
+	
+	void OnClicked();
+
+	// Pass Turn functions
+	void OnHoldPassTurnStarted();
+	void OnHoldPassTurnCancelled();
+	void OnPassedTurnTriggered();
+	
+	// line trace functions
+	AGW_UnitRow* GetRowUnderCursor(AGW_CardBase* CardToCheck);
+	AGW_CardBase* GetCardUnderCursor();
+	
+	EPlayerID PlayerControllerID = EPlayerID::Player1; // ID is always Player1 for single-player mode
+	bool bIsPlayerControllable = false;
+	UPROPERTY() AGW_CardBase* SelectedCard;
+	UPROPERTY() AGW_GameMode* GameMode;
+	
+	// UI
+	UPROPERTY()
+	UW_MedicAbility* MedicAbilityWidget;
+
+	UPROPERTY(EditDefaultsOnly, Category = "UI")
+	TSubclassOf<UW_MedicAbility> MedicAbilityWidgetClass;
+
 	// Input Actions
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	class UInputMappingContext* PlayerInputMapping;
+	UInputMappingContext* PlayerTurnMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputMappingContext* NonPlayerTurnMappingContext;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Input")
 	UInputAction* LeftClickAction;
@@ -41,21 +83,4 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USoundBase* ClickSFX;
 	
-	virtual void SetupInputComponent() override;
-	virtual void BeginPlay() override;
-	
-	// ID is always Player1 for single-player mode
-	EPlayerID PlayerControllerID = EPlayerID::Player1;
-
-	UPROPERTY() AGW_CardBase* SelectedCard;
-
-	
-private:
-	void OnClicked();
-	void OnHoldPassTurnStarted();
-	void OnHoldPassTurnCancelled();
-	void OnPassedTurnTriggered();
-	AGW_CardBase* GetCardUnderCursor();
-	AGW_UnitRow* GetRowUnderCursor(AGW_CardBase* CardToCheck);
-
 };
