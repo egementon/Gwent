@@ -13,9 +13,7 @@
 #include "Row/GW_Graveyard.h"
 #include "Row/GW_PlayerHand.h"
 #include "Row/GW_WeatherRow.h"
-#include "UI/GW_GameHUDWidget.h"
 #include "UI/GW_HUD.h"
-#include "UI/W_WinLoseScreen.h"
 
 
 void AGW_GameMode::RegisterRow(AGW_RowBase* NewRow)

@@ -35,6 +35,8 @@ enum class ECardAbility : uint8
 	Muster       UMETA(DisplayName = "Muster"),
 	// allows you to choose one card from your graveyard and play it instantly (no Heroes or Special Cards)
 	Medic        UMETA(DisplayName = "Medic"),
+	// can be placed on your opponent's battlefield but allow you to draw 2 extra cards from your deck.
+	Spy          UMETA(DisplayName = "Spy"),
 	// reduces the strength of all cards of a given row on the battlefield, including your own.
 	BadWeather   UMETA(DisplayName = "Bad Weather"),
 	// removes all Weather Card effects. 

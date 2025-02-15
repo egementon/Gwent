@@ -261,17 +261,8 @@ void AGW_CardBase::DetachFromOwnerRow()
 
 AGW_UnitRow* AGW_CardBase::FindValidRow()
 {
-	TArray<AGW_UnitRow*> Rows;
 	AGW_UnitRow* ValidRow = nullptr;
-	
-	if (PlayerID == EPlayerID::Player1)
-	{
-		Rows = UGW_FuncLib::GetGameMode(GetWorld())->RowArrayP1;
-	}
-	else if (PlayerID == EPlayerID::Player2)
-	{
-		Rows = UGW_FuncLib::GetGameMode(GetWorld())->RowArrayP2;
-	}
+	TArray<AGW_UnitRow*> AllRows = UGW_FuncLib::GetGameMode(GetWorld())->AllRowsArray;
 	
 	if (this->IsWeatherCard())
 	{
@@ -280,7 +271,7 @@ AGW_UnitRow* AGW_CardBase::FindValidRow()
 	else
 	{
 		// find the first valid row
-		for (AGW_UnitRow* Row : Rows)
+		for (AGW_UnitRow* Row : AllRows)
 		{
 			if (Row->IsValidRowForCard(this))
 			{

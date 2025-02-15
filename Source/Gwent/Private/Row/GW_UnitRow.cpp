@@ -150,9 +150,12 @@ bool AGW_UnitRow::IsValidRowForCard(AGW_CardBase* Card)
 		
 		return false;
 	}
-	
-	//TODO: Spy cards should be placeable on opponent rows
-	if (GetPlayerID() != Card->PlayerID) 
+
+	// exception is that spy cards can only be placed on opponent rows
+	bool bIsSpyCard = Card->GetCardAbility() == ECardAbility::Spy;
+	bool bDoesIDMatch = GetPlayerID() == Card->PlayerID;
+
+	if (bIsSpyCard && bDoesIDMatch || !bIsSpyCard && !bDoesIDMatch)
 	{
 		return false;
 	}

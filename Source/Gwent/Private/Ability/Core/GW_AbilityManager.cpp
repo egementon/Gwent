@@ -10,6 +10,7 @@
 #include "Ability/GW_AbilityMoraleBoost.h"
 #include "Ability/GW_AbilityMuster.h"
 #include "Ability/GW_AbilityScorch.h"
+#include "Ability/GW_AbilitySpy.h"
 #include "Ability/GW_AbilityTightBond.h"
 #include "Data/GW_CardDataAsset.h"
 
@@ -41,6 +42,8 @@ UGW_AbilityBase* UGW_AbilityManager::GetAbility(ECardAbility AbilityType)
 			return NewObject<UGW_AbilityMuster>();
 		case ECardAbility::Medic:
 			return NewObject<UGW_AbilityMedic>();
+		case ECardAbility::Spy:
+			return NewObject<UGW_AbilitySpy>();
 		case ECardAbility::BadWeather:
 			return NewObject<UGW_AbilityBadWeather>();
 		case ECardAbility::ClearWeather:
