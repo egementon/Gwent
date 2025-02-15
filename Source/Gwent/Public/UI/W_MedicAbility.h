@@ -24,7 +24,7 @@ class GWENT_API UW_MedicAbility : public UUserWidget
 public:
 	void SetMedicAbility(UGW_AbilityMedic* NewMedicAbility);
 
-private:
+protected:
 
 	virtual void NativeConstruct() override;
 
@@ -35,6 +35,9 @@ private:
 	TArray<AGW_CardBase*> GraveyardCards;
 	UPROPERTY() TMap<UButton*, AGW_CardBase*> CardButtonMap;
 	UPROPERTY() UGW_AbilityMedic* MedicAbility;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UFont* CardPowerFont;
 	
 	UPROPERTY(meta = (BindWidget))
 	UHorizontalBox* CardContainer;
