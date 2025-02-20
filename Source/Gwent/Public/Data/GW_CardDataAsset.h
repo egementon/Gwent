@@ -41,6 +41,8 @@ enum class ECardAbility : uint8
 	BadWeather   UMETA(DisplayName = "Bad Weather"),
 	// removes all Weather Card effects. 
 	ClearWeather UMETA(DisplayName = "Clear Weather"),
+	// swap with a regular card on your side of the battlefield to return it to your hand
+	Decoy        UMETA(DisplayName = "Decoy"),
 	// destroys the strongest card(s) on the battlefield 
 	Scorch       UMETA(DisplayName = "Scorch"),
 	// double the strength of the selected row (except if another horn is already being used on the row).
