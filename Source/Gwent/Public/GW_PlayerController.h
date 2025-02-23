@@ -55,6 +55,8 @@ protected:
 	AGW_UnitRow* GetRowUnderCursor(AGW_CardBase* CardToCheck);
 	AGW_CardBase* GetCardUnderCursor();
 	
+	void OnPlayedCardAbilityEnded();
+	
 	EPlayerID PlayerControllerID = EPlayerID::Player1; // ID is always Player1 for single-player mode
 	bool bIsPlayerControllable = false;
 	UPROPERTY() AGW_CardBase* SelectedCard;

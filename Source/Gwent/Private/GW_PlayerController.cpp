@@ -13,6 +13,7 @@
 #include "Row/GW_UnitRow.h"
 #include "Gwent/Public/Card/GW_CardBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "Row/GW_PlayerHand.h"
 #include "UI/W_MedicAbility.h"
 
 
@@ -101,24 +102,39 @@ void AGW_PlayerController::OnClicked()
     
     if (SelectedCard)
     {
-        AGW_UnitRow* SelectedRow = GetRowUnderCursor(SelectedCard);
-        
-        if (SelectedRow && SelectedRow->IsValidRowForCard(SelectedCard))
+        // by default, if there is a selected card, look for a row to place
+        // however, if selected card is a decoy, then look for a card to swap with
+        if (SelectedCard->GetCardAbility() != ECardAbility::Decoy)
         {
-            SelectedCard->OnCardAbilityEnded.AddLambda([this]()
+            AGW_UnitRow* SelectedRow = GetRowUnderCursor(SelectedCard);
+        
+            if (SelectedRow && SelectedRow->IsValidRowForCard(SelectedCard))
             {
-                if (GameMode->Player1Data->GetHandSize() == 0)
-                {
-                    GameMode->PlayerPassedTurn(PlayerControllerID);
-                }
-                else
-                {
-                    GameMode->EndPlayerTurn(PlayerControllerID);
-                }
-            });
-            
+                SelectedCard->OnCardAbilityEnded.AddUObject(this, &AGW_PlayerController::OnPlayedCardAbilityEnded);
+                
+                SelectedCard->DetachFromOwnerRow();
+                SelectedCard->SetOwnerRow(SelectedRow, true);
+            }
+        }
+        else
+        {
+            AGW_CardBase* CardToGetBack = GetCardUnderCursor();
+            if (!CardToGetBack)
+            {
+                SelectedCard->HighlightCard(false);
+                SelectedCard = nullptr;
+                return;
+            }
+
+            SelectedCard->OnCardAbilityEnded.AddUObject(this, &AGW_PlayerController::OnPlayedCardAbilityEnded);
+
             SelectedCard->DetachFromOwnerRow();
-            SelectedCard->SetOwnerRow(SelectedRow, true);
+            SelectedCard->SetOwnerRow(CardToGetBack->GetOwnerRow(), true);
+
+            CardToGetBack->DetachFromOwnerRow();
+            CardToGetBack->SetOwnerRow(GameMode->PlayerHandP1, false);
+            CardToGetBack->SetIsSelectable(true);
+            CardToGetBack->SetCardPower(CardToGetBack->GetBaseCardPower());
         }
         
         SelectedCard->HighlightCard(false);
@@ -176,12 +192,32 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
     FHitResult HitResult;
     GetHitResultUnderCursor(ECC_GameTraceChannel1, false, HitResult); // Trace_Card channel
 
-    if (HitResult.GetActor()->IsValidLowLevel())
+    if (!HitResult.GetActor()->IsValidLowLevel()) return nullptr;
+    
+    AGW_CardBase* CardUnderCursor = Cast<AGW_CardBase>(HitResult.GetActor());
+    if (!CardUnderCursor || CardUnderCursor->PlayerID != PlayerControllerID) // can only select cards that have same ID 
     {
-        if (AGW_CardBase* CardUnderCursor = Cast<AGW_CardBase>(HitResult.GetActor()))
+        return nullptr;
+    }
+    
+    // by default, check if the card is selectable
+    if (!SelectedCard)
+    {
+        if (CardUnderCursor->GetIsSelectable())
         {
-            // can only select cards that have same ID 
-            if (PlayerControllerID == CardUnderCursor->PlayerID && CardUnderCursor->GetIsSelectable())
+            return CardUnderCursor;
+        }
+        
+        return nullptr;
+    }
+    
+    // if last selected card is Decoy, return CardUnderCursor even though it is not selectable
+    if (SelectedCard->GetCardAbility() == ECardAbility::Decoy)
+    {
+        if (CardUnderCursor->GetOwnerUnitRow()) // check if it is on a unit row (not on Hand or Graveyard)
+        {
+            // look for unit cards (exclude special, hero, weather, scorch cards)
+            if (!CardUnderCursor->bIsSpecial && !CardUnderCursor->bIsHero && !CardUnderCursor->IsWeatherCard() && CardUnderCursor->GetCardAbility() != ECardAbility::Scorch)
             {
                 return CardUnderCursor;
             }
@@ -189,6 +225,18 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
     }
     
     return nullptr;
+}
+
+void AGW_PlayerController::OnPlayedCardAbilityEnded()
+{
+    if (GameMode->Player1Data->GetHandSize() == 0)
+    {
+        GameMode->PlayerPassedTurn(PlayerControllerID);
+    }
+    else
+    {
+        GameMode->EndPlayerTurn(PlayerControllerID);
+    }
 }
 
 void AGW_PlayerController::ShowMedicAbilityWidget(UGW_AbilityMedic* OwningAbility)

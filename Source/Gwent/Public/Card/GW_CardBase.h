@@ -47,7 +47,7 @@ public:
 	AGW_UnitRow* FindValidRow();
 
 	bool bIsSnapped = false;
-	bool bIsSpecial = false; // placed on the special slot on the row
+	bool bIsSpecial = false; // placed on the special slot on the row (only commander's horn)
 	bool bIsHero = false; // can not be affected from buff/debuffs, i.e. immune card
 
 	void InitializeCardData(FCardData NewCardData);

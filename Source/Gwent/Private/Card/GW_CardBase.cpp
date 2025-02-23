@@ -160,7 +160,7 @@ void AGW_CardBase::DestroySelf()
 	OwnerRow->RemoveFromCardsArray(this);
 	
 	SetOwnerRow(Graveyard, false);
-	bIsSelectable = false;
+	SetIsSelectable(false);
 }
 
 void AGW_CardBase::DestroySelfAfterDelay(const float Delay)
@@ -245,6 +245,8 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 		{
 			NewOwner->AddToCardsArray(this);
 		}
+
+		SetIsSelectable(false);
 	}
 	else // if NewOwner is PlayerHand
 	{
