@@ -115,6 +115,7 @@ void AGW_CardBase::SetIsSelectable(bool bNewIsSelectable)
 void AGW_CardBase::HighlightCard(bool bHighlight)
 {
 	CardMesh->SetRenderCustomDepth(bHighlight);
+	HighlightValidRows(bHighlight);
 }
 
 void AGW_CardBase::EndCardAbility()
@@ -301,6 +302,49 @@ AGW_UnitRow* AGW_CardBase::FindValidRow()
 	}
 	
 	return ValidRow;
+}
+
+void AGW_CardBase::HighlightValidRows(bool bHighlight)
+{
+	if (bHighlight)
+	{
+		if (this->IsWeatherCard())
+		{
+			AGW_WeatherRow* WeatherRow = UGW_FuncLib::GetGameMode(GetWorld())->WeatherRow;
+			WeatherRow->HighlightRow(true);
+			HighlightedRows.AddUnique(WeatherRow);
+		}
+		else
+		{
+			TArray<AGW_UnitRow*> AllRows = UGW_FuncLib::GetGameMode(GetWorld())->AllRowsArray;
+			for (AGW_UnitRow* Row : AllRows)
+			{
+				if (Row->IsValidRowForCard(this))
+				{
+					if (this->bIsSpecial)
+					{
+						Row->HighlightRowSpecialSlot(true);
+					}
+					else
+					{
+						Row->HighlightRow(true);
+					}
+					
+					HighlightedRows.AddUnique(Row);
+				}
+			}
+		}
+	}
+	else
+	{
+		for (AGW_UnitRow* Row : HighlightedRows)
+		{
+			Row->HighlightRow(false);
+			Row->HighlightRowSpecialSlot(false);
+		}
+		
+		HighlightedRows.Empty();
+	}
 }
 
 void AGW_CardBase::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)

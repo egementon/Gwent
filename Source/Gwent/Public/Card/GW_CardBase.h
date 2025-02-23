@@ -48,6 +48,7 @@ public:
 	void SetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility);
 	void DetachFromOwnerRow();
 	AGW_UnitRow* FindValidRow();
+	void HighlightValidRows(bool bHighlight);
 
 	bool bIsSnapped = false;
 	bool bIsSpecial = false; // placed on the special slot on the row (only commander's horn)
@@ -78,6 +79,7 @@ protected:
 	UPROPERTY() AGW_RowBase* OwnerRow;
 	int32 BaseCardPower;
 	bool bIsSelectable = false;
+	TArray<AGW_UnitRow*> HighlightedRows;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* CardMesh;

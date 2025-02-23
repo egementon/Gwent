@@ -31,7 +31,6 @@ public:
 	void UpdateAllCardsPowers(); 
 	void CalculateRowPower();
 	bool IsValidRowForCard(AGW_CardBase* Card);
-	//TODO: GetValidRows(); use for AI and highlighting
 	
 	virtual void AddToCardsArray(AGW_CardBase* AddedCard) override;
 	virtual void RemoveFromCardsArray(AGW_CardBase* RemovedCard) override;
@@ -47,6 +46,10 @@ public:
 	// tight-bonded cards
 	TMap<FName, TArray<AGW_CardBase*>> TightBondedCards;
 	void OnTightBondedCardRemoved(AGW_CardBase* RemovedCard);
+
+	// Highlight
+	void HighlightRow(bool bHighlight);
+	void HighlightRowSpecialSlot(bool bHighlight);
 	
 protected:
 	virtual void BeginPlay() override;
@@ -56,6 +59,12 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UTextRenderComponent* TotalPowerText;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* AreaMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* SpecialSlotAreaMesh;
 
 	void SetCardPowerParameters(AGW_CardBase* AddedCard);
 	

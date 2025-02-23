@@ -26,6 +26,20 @@ AGW_UnitRow::AGW_UnitRow()
 	// enable line trace for these box components
 	RowBoxComponent->SetCollisionProfileName("Row");
 	SpecialSlotBoxComponent->SetCollisionProfileName("Row");
+
+	// area meshes to display outline effect on rows
+	AreaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("AreaMesh"));
+	AreaMesh->SetupAttachment(RootComponent);
+	AreaMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AreaMesh->SetRenderInMainPass(false);
+	AreaMesh->SetRenderInDepthPass(false);
+	AreaMesh->SetCastShadow(false);
+	SpecialSlotAreaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SpecialSlotAreaMesh"));
+	SpecialSlotAreaMesh->SetupAttachment(RootComponent);
+	SpecialSlotAreaMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SpecialSlotAreaMesh->SetRenderInMainPass(false);
+	SpecialSlotAreaMesh->SetRenderInDepthPass(false);
+	SpecialSlotAreaMesh->SetCastShadow(false);
 }
 
 void AGW_UnitRow::BeginPlay()
@@ -215,6 +229,19 @@ void AGW_UnitRow::OnTightBondedCardRemoved(AGW_CardBase* DestroyedCard)
 			TightBondedCards.Remove(DestroyedCard->GetCardName());
 			UE_LOG(LogTemp, Log, TEXT("Bonded array for %s is now empty and has been removed from the map."), *DestroyedCard->GetCardName().ToString());
 		}
+	}
+}
+
+void AGW_UnitRow::HighlightRow(bool bHighlight)
+{
+	AreaMesh->SetRenderCustomDepth(bHighlight);
+}
+
+void AGW_UnitRow::HighlightRowSpecialSlot(bool bHighlight)
+{
+	if (SpecialSlotAreaMesh)
+	{
+		SpecialSlotAreaMesh->SetRenderCustomDepth(bHighlight);
 	}
 }
 

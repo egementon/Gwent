@@ -18,14 +18,15 @@ AGW_WeatherRow::AGW_WeatherRow()
 	// does not need these components
 	if (TotalPowerText)
 	{
-		TotalPowerText->SetVisibility(false);
-		TotalPowerText->SetHiddenInGame(true);
+		TotalPowerText->DestroyComponent();
 	}
-
 	if (SpecialSlotBoxComponent)
 	{
-		SpecialSlotBoxComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		SpecialSlotBoxComponent->SetVisibility(false);
+		SpecialSlotBoxComponent->DestroyComponent();
+	}
+	if (SpecialSlotAreaMesh)
+	{
+		SpecialSlotAreaMesh->DestroyComponent();
 	}
 }
 
