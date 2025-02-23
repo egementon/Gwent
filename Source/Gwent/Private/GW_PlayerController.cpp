@@ -112,8 +112,7 @@ void AGW_PlayerController::OnClicked()
             {
                 SelectedCard->OnCardAbilityEnded.AddUObject(this, &AGW_PlayerController::OnPlayedCardAbilityEnded);
                 
-                SelectedCard->DetachFromOwnerRow();
-                SelectedCard->SetOwnerRow(SelectedRow, true);
+                SelectedCard->DetachAndSetOwnerRow(SelectedRow, true);
             }
         }
         else
@@ -128,13 +127,11 @@ void AGW_PlayerController::OnClicked()
 
             SelectedCard->OnCardAbilityEnded.AddUObject(this, &AGW_PlayerController::OnPlayedCardAbilityEnded);
 
-            SelectedCard->DetachFromOwnerRow();
-            SelectedCard->SetOwnerRow(CardToGetBack->GetOwnerRow(), true);
+            SelectedCard->DetachAndSetOwnerRow(CardToGetBack->GetOwnerRow(), true);
 
-            CardToGetBack->DetachFromOwnerRow();
-            CardToGetBack->SetOwnerRow(GameMode->PlayerHandP1, false);
+            CardToGetBack->DetachAndSetOwnerRow(GameMode->PlayerHandP1, false);
             CardToGetBack->SetIsSelectable(true);
-            CardToGetBack->SetCardPower(CardToGetBack->GetBaseCardPower());
+            CardToGetBack->ResetCardPower();
         }
         
         SelectedCard->HighlightCard(false);
@@ -216,8 +213,8 @@ AGW_CardBase* AGW_PlayerController::GetCardUnderCursor()
     {
         if (CardUnderCursor->GetOwnerUnitRow()) // check if it is on a unit row (not on Hand or Graveyard)
         {
-            // look for unit cards (exclude special, hero, weather, scorch cards)
-            if (!CardUnderCursor->bIsSpecial && !CardUnderCursor->bIsHero && !CardUnderCursor->IsWeatherCard() && CardUnderCursor->GetCardAbility() != ECardAbility::Scorch)
+            // look for unit cards (exclude special, hero cards)
+            if (CardUnderCursor->IsRegularUnitCard())
             {
                 return CardUnderCursor;
             }

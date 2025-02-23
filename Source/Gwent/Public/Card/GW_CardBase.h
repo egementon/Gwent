@@ -34,14 +34,17 @@ public:
 	int32 GetBaseCardPower() const;
 	bool GetIsSelectable();
 	bool IsWeatherCard();
+	bool IsRegularUnitCard();
 	
 	void SetCardPower(int32 NewCardPower);
+	void ResetCardPower();
 	void SetIsSelectable(bool bNewIsSelectable);
 	
 	void HighlightCard(bool bHighlight);
 	void EndCardAbility();
 
 	// Row Functions
+	void DetachAndSetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility);
 	void SetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility);
 	void DetachFromOwnerRow();
 	AGW_UnitRow* FindValidRow();
@@ -88,6 +91,9 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	int32 CardPower;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
+	ECardType CardType;;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")
 	EUnitRowType CardRowType;

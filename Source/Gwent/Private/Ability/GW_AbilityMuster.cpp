@@ -44,8 +44,7 @@ void UGW_AbilityMuster::ActivateAbility(AGW_CardBase* Card)
 	{
 		for (AGW_CardBase* SameNameRowCard : SameNameDeckCards)
 		{
-	        SameNameRowCard->DetachFromOwnerRow();
-			SameNameRowCard->SetOwnerRow(Card->GetOwnerRow(), false);
+			SameNameRowCard->DetachAndSetOwnerRow(Card->GetOwnerRow(), false);
 		}
 	}
 }

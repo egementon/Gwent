@@ -65,19 +65,84 @@ void AGW_AIController::MakeDecision()
 	}
 }
 
-void AGW_AIController::PlayRandomCard()
+AGW_CardBase* AGW_AIController::GetRandomCard()
 {
 	TArray<AGW_CardBase*> HandCards = PlayerHandP2->GetSnappedCardsArray();
-	
+	if (HandCards.IsEmpty()) return nullptr;
+
 	// select random card from Hand
 	const int32 RandomIndex = FMath::RandRange(0, HandCards.Num() - 1);
-	AGW_CardBase* SelectedCard = HandCards[RandomIndex];
-	
-	SelectedCard->OnCardAbilityEnded.AddLambda([this]()
+	return HandCards[RandomIndex];
+}
+
+void AGW_AIController::PlayRandomCard()
+{
+	AGW_CardBase* SelectedCard = GetRandomCard();
+
+	if (SelectedCard->GetCardAbility() == ECardAbility::Decoy)
 	{
-		GameMode->EndPlayerTurn(PlayerControllerID);
-	});
+		OnSelectedDecoyCard(SelectedCard);
+	}
+	else
+	{
+		PlayCard(SelectedCard);
+	}
+}
+
+void AGW_AIController::PlayCard(AGW_CardBase* CardToPlay)
+{
+	CardToPlay->OnCardAbilityEnded.AddLambda([this]()
+		{
+			GameMode->EndPlayerTurn(PlayerControllerID);
+		});
+		
+	CardToPlay->DetachAndSetOwnerRow(CardToPlay->FindValidRow(), true);
+}
+
+void AGW_AIController::OnSelectedDecoyCard(AGW_CardBase* SelectedCard)
+{
+	TArray<AGW_CardBase*> PlayedUnitCards;
+	for (AGW_UnitRow* Row : RowArrayP2)
+	{
+		TArray<AGW_CardBase*> SnappedCards = Row->GetSnappedCardsArray();
+		for (AGW_CardBase* Card : SnappedCards)
+		{
+			if (Card->IsRegularUnitCard())
+			{
+				PlayedUnitCards.Add(Card);
+			}
+		}
+	}
 	
-	SelectedCard->DetachFromOwnerRow();
-	SelectedCard->SetOwnerRow(SelectedCard->FindValidRow(), true);
+	if (!PlayedUnitCards.IsEmpty())
+	{
+		const int32 RandomCardIndex = FMath::RandRange(0, PlayedUnitCards.Num() - 1);
+		AGW_CardBase* CardToGetBack = PlayedUnitCards[RandomCardIndex];
+
+		SelectedCard->DetachAndSetOwnerRow(CardToGetBack->GetOwnerRow(), true);
+			
+		CardToGetBack->DetachAndSetOwnerRow(GameMode->PlayerHandP2, false);
+		CardToGetBack->SetIsSelectable(true);
+		CardToGetBack->ResetCardPower();
+
+		GameMode->EndPlayerTurn(PlayerControllerID);
+	}
+	else // if there is no card to swap with, select another card instead of Decoy
+	{
+		bool bFoundCardToPlay = false;
+		for (AGW_CardBase* HandCard : PlayerHandP2->GetSnappedCardsArray())
+		{
+			if (HandCard->GetCardAbility() != ECardAbility::Decoy)
+			{
+				bFoundCardToPlay = true;
+				PlayCard(HandCard);
+				break;
+			}
+		}
+
+		if (!bFoundCardToPlay)
+		{
+			GameMode->EndPlayerTurn(PlayerControllerID);
+		}
+	}
 }

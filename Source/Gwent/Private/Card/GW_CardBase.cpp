@@ -80,6 +80,11 @@ bool AGW_CardBase::IsWeatherCard()
 	return GetCardAbility() == ECardAbility::BadWeather || GetCardAbility() == ECardAbility::ClearWeather;
 }
 
+bool AGW_CardBase::IsRegularUnitCard()
+{
+	return CardType == ECardType::Unit_Regular;
+}
+
 void AGW_CardBase::SetCardPower(int32 NewCardPower)
 {
 	if (bIsHero) return; // hero cards are immune to buff/debuffs
@@ -95,6 +100,11 @@ void AGW_CardBase::SetCardPower(int32 NewCardPower)
 	: FColor::Black;
 	
 	CardPowerText->SetTextRenderColor(PowerColor);
+}
+
+void AGW_CardBase::ResetCardPower()
+{
+	SetCardPower(BaseCardPower);
 }
 
 void AGW_CardBase::SetIsSelectable(bool bNewIsSelectable)
@@ -116,13 +126,15 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 {
 	CardName = NewCardData.Name;
 	CardPower = NewCardData.Power;
+	CardType = NewCardData.CardType;
 	CardRowType = NewCardData.RowType;
-	bIsSpecial = NewCardData.bIsSpecial;
-	bIsHero = NewCardData.bIsHero;
 	CardAbility = NewCardData.Ability;
 	CardImage = NewCardData.Image;
 	CardSFX = NewCardData.SFX;
+
 	BaseCardPower = CardPower;
+	bIsHero = CardType == ECardType::Unit_Hero;
+	bIsSpecial = CardType == ECardType::Special_SpecialSlot;
 }
 
 void AGW_CardBase::DestroySelf()
@@ -156,11 +168,10 @@ void AGW_CardBase::DestroySelf()
 			Row->SetSpecialSlotEmpty(true);
 		}
 	}
-	
-	OwnerRow->RemoveFromCardsArray(this);
-	
-	SetOwnerRow(Graveyard, false);
+
+	DetachAndSetOwnerRow(Graveyard, false);
 	SetIsSelectable(false);
+	ResetCardPower();
 }
 
 void AGW_CardBase::DestroySelfAfterDelay(const float Delay)
@@ -215,6 +226,12 @@ void AGW_CardBase::CanActivateAbility()
 	{
 		EndCardAbility();
 	}
+}
+
+void AGW_CardBase::DetachAndSetOwnerRow(AGW_RowBase* NewOwner, bool bShouldActivateAbility)
+{
+	DetachFromOwnerRow();
+	SetOwnerRow(NewOwner, bShouldActivateAbility);
 }
 
 void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivateAbility)

@@ -13,9 +13,8 @@ void UGW_AbilityMedic::OnCardSelected(AGW_CardBase* SelectedCard)
 {
 	if (SelectedCard)
 	{
-		SelectedCard->DetachFromOwnerRow();
-		SelectedCard->SetOwnerRow(SelectedCard->FindValidRow(), true); // find first valid row
-
+		SelectedCard->DetachAndSetOwnerRow(SelectedCard->FindValidRow(), true); // find first valid row
+		
 		// do not EndAbility if selected card is another medic card
 		if (SelectedCard->GetCardAbility() != ECardAbility::Medic)
 		{
@@ -39,8 +38,8 @@ void UGW_AbilityMedic::ActivateAbility(AGW_CardBase* Card)
 		
 		for (AGW_CardBase* GraveyardCard : GraveyardCards)
 		{
-			// look for unit cards (exclude special, hero, weather, scorch cards)
-			if (!GraveyardCard->bIsSpecial && !GraveyardCard->bIsHero && !GraveyardCard->IsWeatherCard() && GraveyardCard->GetCardAbility() != ECardAbility::Scorch)
+            // look for unit cards (exclude special, hero cards)
+            if (GraveyardCard->IsRegularUnitCard())
 			{
 				SelectableGraveyardCards.AddUnique(GraveyardCard);
 			}
@@ -48,7 +47,8 @@ void UGW_AbilityMedic::ActivateAbility(AGW_CardBase* Card)
 
 		if (!SelectableGraveyardCards.IsEmpty())
 		{
-			// show card selection for Player 1
+			// ability behaves different for Player1 and AI
+			// for Player1, show card selection
 			if (Card->PlayerID == EPlayerID::Player1)
 			{
 				// found a unit card, display UI
@@ -59,7 +59,7 @@ void UGW_AbilityMedic::ActivateAbility(AGW_CardBase* Card)
 					PC->ShowMedicAbilityWidget(this);
 				}
 			}
-			else // after a delay, select a card automatically for Player 2
+			else // for AI, after a delay, select a card automatically
 			{
 				Card->GetWorld()->GetTimerManager().SetTimer(DelayTimer,[this]()
 				{

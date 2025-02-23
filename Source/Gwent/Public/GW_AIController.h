@@ -7,6 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_AIController.generated.h"
 
+class AGW_CardBase;
 class AGW_GameMode;
 class AGW_WeatherRow;
 class AGW_UnitRow;
@@ -27,7 +28,10 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	void MakeDecision();
+	AGW_CardBase* GetRandomCard();
 	void PlayRandomCard();
+	void PlayCard(AGW_CardBase* CardToPlay);
+	void OnSelectedDecoyCard(AGW_CardBase* SelectedCard);
 
 	// AI is always Player2
 	EPlayerID PlayerControllerID = EPlayerID::Player2;

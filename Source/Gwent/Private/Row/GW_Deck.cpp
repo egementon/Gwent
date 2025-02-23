@@ -38,8 +38,7 @@ void AGW_Deck::GiveRandomCardsToHand(int32 StartingHandSize)
 	{
 		const int32 RandomIndex = FMath::RandRange(0, SnappedCardsArray.Num() - 1);
 		AGW_CardBase* RandomCard = SnappedCardsArray[RandomIndex];
-		RandomCard->DetachFromOwnerRow();
-		RandomCard->SetOwnerRow(PlayerHand,false);
+		RandomCard->DetachAndSetOwnerRow(PlayerHand,false);
 		RandomCard->SetIsSelectable(true);
 	}
 	

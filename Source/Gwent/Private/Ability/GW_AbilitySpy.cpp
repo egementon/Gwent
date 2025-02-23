@@ -42,8 +42,7 @@ void UGW_AbilitySpy::GetRandomCardFromDeckToHand()
 		
 		const int32 RandomIndex = FMath::RandRange(0, PlayerDeckCards.Num() - 1);
 
-		PlayerDeckCards[RandomIndex]->DetachFromOwnerRow();
-		PlayerDeckCards[RandomIndex]->SetOwnerRow(PlayerHand, false);
+		PlayerDeckCards[RandomIndex]->DetachAndSetOwnerRow(PlayerHand, false);
 		PlayerDeckCards[RandomIndex]->SetIsSelectable(true);
 	}
 }

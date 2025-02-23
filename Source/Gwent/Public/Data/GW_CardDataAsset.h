@@ -6,6 +6,15 @@
 #include "Engine/DataAsset.h"
 #include "GW_CardDataAsset.generated.h"
 
+UENUM(BlueprintType)
+enum class ECardType : uint8
+{
+	Unit_Regular          UMETA(DisplayName = "Unit, Regular"),
+	Unit_Hero             UMETA(DisplayName = "Unit, Hero"),
+	Special_RegularSlot   UMETA(DisplayName = "Special, Regular Slot"),
+	Special_SpecialSlot   UMETA(DisplayName = "Special, Special Slot"),
+	Special_WeatherSlot   UMETA(DisplayName = "Special, Weather Slot")
+};
 
 UENUM(BlueprintType)
 enum class EUnitRowType : uint8
@@ -62,13 +71,10 @@ struct FCardData
 	int32 Power = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
+	ECardType CardType = ECardType::Unit_Regular;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	EUnitRowType RowType = EUnitRowType::Melee;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	bool bIsSpecial = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
-	bool bIsHero = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	ECardAbility Ability = ECardAbility::NoAbility;
@@ -81,7 +87,6 @@ struct FCardData
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Card")
 	bool bDebug_ExcludeFromDeck = false;
-
 };
 
 
