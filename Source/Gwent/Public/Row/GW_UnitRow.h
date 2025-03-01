@@ -27,6 +27,7 @@ public:
 	// Setters
 	void SetSpecialCard(AGW_CardBase* SpecialCard);
 	void SetSpecialSlotEmpty(bool bIsEmpty);
+	void SetRowHasBadWeather(bool bHasBadWeather);
 	
 	void UpdateAllCardsPowers(); 
 	void CalculateRowPower();
@@ -65,6 +66,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* SpecialSlotAreaMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* BadWeatherAreaMesh;
 
 	void SetCardPowerParameters(AGW_CardBase* AddedCard);
 	

@@ -40,6 +40,10 @@ AGW_UnitRow::AGW_UnitRow()
 	SpecialSlotAreaMesh->SetRenderInMainPass(false);
 	SpecialSlotAreaMesh->SetRenderInDepthPass(false);
 	SpecialSlotAreaMesh->SetCastShadow(false);
+	BadWeatherAreaMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BadWeatherAreaMesh"));
+	BadWeatherAreaMesh->SetupAttachment(RootComponent);
+	BadWeatherAreaMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	BadWeatherAreaMesh->SetVisibility(false);
 }
 
 void AGW_UnitRow::BeginPlay()
@@ -79,6 +83,13 @@ void AGW_UnitRow::SetSpecialSlotEmpty(bool bIsEmpty)
 {
 	bIsSpecialSlotEmpty = bIsEmpty;
 }
+
+void AGW_UnitRow::SetRowHasBadWeather(bool bHasBadWeather)
+{
+	bRowHasBadWeather = bHasBadWeather;
+	BadWeatherAreaMesh->SetVisibility(bHasBadWeather);
+}
+
 
 void AGW_UnitRow::SetCardPowerParameters(AGW_CardBase* AddedCard)
 {
@@ -147,7 +158,10 @@ void AGW_UnitRow::CalculateRowPower()
 		}
 	}
 
-	TotalPowerText->SetText(FText::AsNumber(TotalPower));
+	if (TotalPowerText)
+	{
+		TotalPowerText->SetText(FText::AsNumber(TotalPower));
+	}
 
 	GameMode->UpdatePlayerScore(this->PlayerID);
 }

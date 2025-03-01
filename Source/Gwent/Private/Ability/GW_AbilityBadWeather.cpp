@@ -16,7 +16,7 @@ void UGW_AbilityBadWeather::ActivateAbility(AGW_CardBase* Card)
 		// for example, if row type of the card is selected as melee, bad weather will affect only melee rows
 		if (CardRowType == Row->RowType)
 		{
-			Row->bRowHasBadWeather = true;
+			Row->SetRowHasBadWeather(true);
 			Row->UpdateAllCardsPowers();
 		}
 	}

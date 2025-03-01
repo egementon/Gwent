@@ -76,7 +76,7 @@ void AGW_WeatherRow::ClearWeather()
 	TArray<AGW_UnitRow*> RowArray = GameMode->AllRowsArray;
 	for (AGW_UnitRow* Row : RowArray)
 	{
-		Row->bRowHasBadWeather = false;
+		Row->SetRowHasBadWeather(false);
 		Row->UpdateAllCardsPowers();
 	}
 }
