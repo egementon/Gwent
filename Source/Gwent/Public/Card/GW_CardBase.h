@@ -40,6 +40,7 @@ public:
 	void SetCardPower(int32 NewCardPower);
 	void ResetCardPower();
 	void SetIsSelectable(bool bNewIsSelectable);
+	void SetIsFacedDown(bool bNewIsFacedDown);
 	
 	void HighlightCard(bool bHighlight);
 	void EndCardAbility();
@@ -76,10 +77,12 @@ protected:
 	virtual void BeginPlay() override;
 
 	void CanActivateAbility();
+	void SetStartingMaterial();
 
 	UPROPERTY() AGW_RowBase* OwnerRow;
 	int32 BaseCardPower;
 	bool bIsSelectable = false;
+	UPROPERTY(BlueprintReadOnly) bool bIsFacedDown = false; // cards are not visible when created at the deck
 	TArray<AGW_UnitRow*> HighlightedRows;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -90,6 +93,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UNiagaraSystem* CardPlacedNiagaraEffect;
+
+	UPROPERTY(EditAnywhere)
+	UMaterialInterface* FacedDownMaterial;
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")

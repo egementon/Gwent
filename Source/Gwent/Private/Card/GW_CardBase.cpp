@@ -10,7 +10,9 @@
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Row/GW_Deck.h"
 #include "Row/GW_Graveyard.h"
+#include "Row/GW_PlayerHand.h"
 #include "Row/GW_UnitRow.h"
 #include "Row/GW_WeatherRow.h"
 
@@ -18,7 +20,7 @@
 // Sets default values
 AGW_CardBase::AGW_CardBase()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	CardMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	SetRootComponent(CardMesh);
@@ -113,6 +115,27 @@ void AGW_CardBase::SetIsSelectable(bool bNewIsSelectable)
 	bIsSelectable = bNewIsSelectable;
 }
 
+void AGW_CardBase::SetIsFacedDown(bool bNewIsFacedDown)
+{
+	if (bIsFacedDown == bNewIsFacedDown) return;
+
+	bIsFacedDown = bNewIsFacedDown;
+
+	if (CardPower != 0 && !bIsHero)
+	{
+		CardPowerText->SetVisibility(!bIsFacedDown);
+	}
+
+	if (bIsFacedDown)
+	{
+		CardMesh->SetMaterial(0, FacedDownMaterial);
+	}
+	else
+	{
+		SetStartingMaterial();
+	}
+}
+
 void AGW_CardBase::HighlightCard(bool bHighlight)
 {
 	CardMesh->SetRenderCustomDepth(bHighlight);
@@ -191,10 +214,9 @@ void AGW_CardBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(CardMesh->GetMaterial(0), this))
+	if (!bIsFacedDown)
 	{
-		DynamicMaterial->SetTextureParameterValue(FName("CardTexture"), CardImage);
-		CardMesh->SetMaterial(0, DynamicMaterial);
+		SetStartingMaterial();
 	}
 
 	// Card Power is already written in Hero Cards. Also, some cards do not have any power to be written (0)
@@ -227,6 +249,15 @@ void AGW_CardBase::CanActivateAbility()
 	if (CardAbility != ECardAbility::Medic)
 	{
 		EndCardAbility();
+	}
+}
+
+void AGW_CardBase::SetStartingMaterial()
+{
+	if (UMaterialInstanceDynamic* DynamicMaterial = UMaterialInstanceDynamic::Create(CardMesh->GetMaterial(0), this))
+	{
+		DynamicMaterial->SetTextureParameterValue(FName("CardTexture"), CardImage);
+		CardMesh->SetMaterial(0, DynamicMaterial);
 	}
 }
 
@@ -268,9 +299,31 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, CardPlacedNiagaraEffect, GetActorLocation(), GetActorRotation(), FVector::One() * 7.f);
 
 		SetIsSelectable(false);
+		SetIsFacedDown(false);
 	}
-	else // if NewOwner is PlayerHand
+	else // if NewOwner is Deck, Graveyard or PlayerHand
 	{
+		if (Cast<AGW_Deck>(NewOwner))
+		{
+			SetIsFacedDown(true);
+		}
+		else if (Cast<AGW_Graveyard>(NewOwner))
+		{
+			SetIsFacedDown(false);
+		}
+		else if (Cast<AGW_PlayerHand>(NewOwner))
+		{
+			// always hide player 2 cards on PlayerHand
+			if (PlayerID == EPlayerID::Player2)
+			{
+				SetIsFacedDown(true);
+			}
+			else
+			{
+				SetIsFacedDown(false);
+			}
+		}
+		
 		NewOwner->AddToCardsArray(this);
 	}
 }
