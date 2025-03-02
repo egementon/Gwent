@@ -8,6 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "GW_CardBase.generated.h"
 
+class UNiagaraSystem;
 class AGW_Graveyard;
 class AGW_UnitRow;
 class UTextRenderComponent;
@@ -86,6 +87,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UTextRenderComponent* CardPowerText;
+
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* CardPlacedNiagaraEffect;
 	
 	// Card Data
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CardData")

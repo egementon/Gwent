@@ -2,6 +2,12 @@ Binaries
 DerivedDataCache
 Intermediate
 Saved
+Content/Fab
+Content/Materials
+Content/Megascans
+Content/Meshes
+Content/PhysMat
+Content/ThirdParty
 .vscode
 .vs
 *.VC.db

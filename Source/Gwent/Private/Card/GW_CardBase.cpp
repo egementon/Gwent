@@ -5,6 +5,7 @@
 
 #include "GW_FuncLib.h"
 #include "GW_GameMode.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Ability/Core/GW_AbilityBase.h"
 #include "Ability/Core/GW_AbilityManager.h"
 #include "Components/TextRenderComponent.h"
@@ -263,6 +264,8 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 		{
 			NewOwner->AddToCardsArray(this);
 		}
+
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, CardPlacedNiagaraEffect, GetActorLocation(), GetActorRotation(), FVector::One() * 7.f);
 
 		SetIsSelectable(false);
 	}
