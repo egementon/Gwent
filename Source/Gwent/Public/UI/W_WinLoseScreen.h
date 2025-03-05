@@ -7,6 +7,7 @@
 #include "Blueprint/UserWidget.h"
 #include "W_WinLoseScreen.generated.h"
 
+class UButton;
 class UImage;
 class UTextBlock;
 /**
@@ -22,6 +23,8 @@ public:
 
 protected:
 	virtual void NativeConstruct() override;
+	UFUNCTION()	void OnReplayButtonClicked();
+	UFUNCTION()	void OnMainMenuButtonClicked();
 
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Text_Player1Name;
@@ -62,4 +65,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UTexture2D* DrawImage;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Button_Replay;
+
+	UPROPERTY(meta = (BindWidget))
+	UButton* Button_MainMenu;
 };

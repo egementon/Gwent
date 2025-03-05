@@ -5,8 +5,10 @@
 
 #include "GW_FuncLib.h"
 #include "GW_GameMode.h"
+#include "Components/Button.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 void UW_WinLoseScreen::NativeConstruct()
 {
@@ -103,4 +105,18 @@ void UW_WinLoseScreen::ShowWidget(EMatchResult FinalMatchResult, TMap<FName, TAr
 		WinLoseImage->SetBrushFromTexture(DrawImage);
 		break;
 	}
+
+	Button_Replay->OnClicked.AddDynamic(this, &UW_WinLoseScreen::OnReplayButtonClicked);
+	Button_MainMenu->OnClicked.AddDynamic(this, &UW_WinLoseScreen::OnMainMenuButtonClicked);
+}
+
+void UW_WinLoseScreen::OnReplayButtonClicked()
+{
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(this);
+	UGameplayStatics::OpenLevel(this, *CurrentLevelName);
+}
+
+void UW_WinLoseScreen::OnMainMenuButtonClicked()
+{
+	UGameplayStatics::OpenLevel(this, FName("MainMenu"));
 }
