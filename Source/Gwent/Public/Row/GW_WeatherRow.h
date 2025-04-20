@@ -16,6 +16,7 @@ public:
 
 	void DestroyBadWeatherCards();
 	void ClearWeather();
+	bool DoesRowHasSameNameCard(AGW_CardBase* Card);
 
 protected:
 	virtual void BeginPlay() override;

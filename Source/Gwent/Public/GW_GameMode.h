@@ -122,16 +122,16 @@ protected:
 	float WaitPhaseDuration = 1.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
-	float StartGameWaitDuration = 1.f;
+	float StartGameWaitDuration = 2.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
-	float RestartGameWaitDuration = 1.f;
+	float RestartGameWaitDuration = 2.f;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
-	float RoundEndWaitDuration = 1.f;
+	float RoundEndWaitDuration = 2.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Duration")
-	float EndGameWaitDuration = 2.f;
+	float EndGameWaitDuration = 5.f;
 	
 	EGamePhase CurrentGamePhase = EGamePhase::Start;
 	

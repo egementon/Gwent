@@ -164,36 +164,6 @@ void AGW_CardBase::InitializeCardData(FCardData NewCardData)
 
 void AGW_CardBase::DestroySelf()
 {
-	// if card is on a UnitRow
-	if (AGW_UnitRow* Row = Cast<AGW_UnitRow>(GetOwnerRow()))
-	{
-		// card specific destroy events
-		if (CardAbility == ECardAbility::MoraleBoost)
-		{
-			Row->RowMoraleBoostAddition--;
-			Row->UpdateAllCardsPowers();
-		}
-		if (CardAbility == ECardAbility::TightBond)
-		{
-			Row->OnTightBondedCardRemoved(this);
-			Row->UpdateAllCardsPowers();
-		}
-		if (CardAbility == ECardAbility::BadWeather)
-		{
-			if (AGW_WeatherRow* WeatherRow = Cast<AGW_WeatherRow>(Row))
-			{
-				WeatherRow->ClearWeather();
-			}
-		}
-		
-		// if special card destroyed from UnitRow
-		if (bIsSpecial)
-		{
-			Row->SetSpecialCard(nullptr);
-			Row->SetSpecialSlotEmpty(true);
-		}
-	}
-
 	DetachAndSetOwnerRow(Graveyard, false);
 	SetIsSelectable(false);
 	ResetCardPower();
@@ -220,7 +190,7 @@ void AGW_CardBase::BeginPlay()
 	}
 
 	// Card Power is already written in Hero Cards. Also, some cards do not have any power to be written (0)
-	if (CardPower == 0 || bIsHero) //TODO: create a new boolean for Powerless cards instead of giving them 0 power
+	if (CardPower == 0 || bIsHero || CardAbility == ECardAbility::Decoy) //TODO: create a new boolean for Powerless cards instead of giving them 0 power
 	{
 		CardPowerText->SetVisibility(false);
 	}
@@ -330,6 +300,40 @@ void AGW_CardBase::SetOwnerRow(AGW_RowBase* NewOwner, const bool bShouldActivate
 
 void AGW_CardBase::DetachFromOwnerRow()
 {
+	// if card is on a UnitRow
+	if (AGW_UnitRow* Row = Cast<AGW_UnitRow>(GetOwnerRow()))
+	{
+		// card specific destroy events
+		if (CardAbility == ECardAbility::MoraleBoost)
+		{
+			Row->RowMoraleBoostAddition--;
+			Row->UpdateAllCardsPowers();
+		}
+		if (CardAbility == ECardAbility::TightBond)
+		{
+			Row->OnTightBondedCardRemoved(this);
+			Row->UpdateAllCardsPowers();
+		}
+		if (CardAbility == ECardAbility::BadWeather)
+		{
+			if (AGW_WeatherRow* WeatherRow = Cast<AGW_WeatherRow>(Row))
+			{
+				// Clear weather if there is no same name card on weather row left
+				if (!WeatherRow->DoesRowHasSameNameCard(this))
+				{
+					WeatherRow->ClearWeather();
+				}
+			}
+		}
+		
+		// if special card destroyed from UnitRow
+		if (bIsSpecial)
+		{
+			Row->SetSpecialCard(nullptr);
+			Row->SetSpecialSlotEmpty(true);
+		}
+	}
+	
 	OwnerRow->RemoveFromCardsArray(this);
 	OwnerRow = nullptr;
 	bIsSnapped = false;

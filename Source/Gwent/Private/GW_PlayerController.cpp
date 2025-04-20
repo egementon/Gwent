@@ -127,6 +127,7 @@ void AGW_PlayerController::OnClicked()
 
             SelectedCard->OnCardAbilityEnded.AddUObject(this, &AGW_PlayerController::OnPlayedCardAbilityEnded);
 
+            // place the decoy card on CardToGetBack's row
             SelectedCard->DetachAndSetOwnerRow(CardToGetBack->GetOwnerRow(), true);
 
             CardToGetBack->DetachAndSetOwnerRow(GameMode->PlayerHandP1, false);

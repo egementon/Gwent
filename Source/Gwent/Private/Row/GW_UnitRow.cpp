@@ -90,50 +90,52 @@ void AGW_UnitRow::SetRowHasBadWeather(bool bHasBadWeather)
 	BadWeatherAreaMesh->SetVisibility(bHasBadWeather);
 }
 
-
-void AGW_UnitRow::SetCardPowerParameters(AGW_CardBase* AddedCard)
+// Update Card's power calculation parameters according to Row
+void AGW_UnitRow::SetCardPowerParameters(AGW_CardBase* Card)
 {
-	// Update Card's power calculation parameters according to Row
+	// Bad Weather
 	if (bRowHasBadWeather)
 	{
-		AddedCard->bHasWeatherDamage = true;
+		Card->bHasWeatherDamage = true;
 	}
 	else
 	{
-		AddedCard->bHasWeatherDamage = false;
+		Card->bHasWeatherDamage = false;
 	}
 
-	if (RowMoraleBoostAddition > 0)
-	{
-		int32 Addition = RowMoraleBoostAddition;
-		if (AddedCard->GetCardAbility() == ECardAbility::MoraleBoost)
-		{
-			--Addition;
-		}
-		
-		AddedCard->MoraleBoost = Addition;
-	}
+	// Morale Boost
+	int32 Addition = RowMoraleBoostAddition;
 
-	if (AddedCard->GetCardAbility() == ECardAbility::TightBond)
+	// MoraleBoost cards can not boost themselves
+	if (Card->GetCardAbility() == ECardAbility::MoraleBoost)
 	{
-		if (const TArray<AGW_CardBase*>* BondedArray = TightBondedCards.Find(AddedCard->GetCardName()))
-		{
-			const int32 BondedCount = BondedArray->Num();
-			AddedCard->TightBondMultiplier = BondedCount;
-		}
+		--Addition;
 	}
 	
+	Card->MoraleBoost = Addition;
+
+	// Tight Bond
+	if (Card->GetCardAbility() == ECardAbility::TightBond)
+	{
+		if (const TArray<AGW_CardBase*>* BondedArray = TightBondedCards.Find(Card->GetCardName()))
+		{
+			const int32 BondedCount = BondedArray->Num();
+			Card->TightBondMultiplier = BondedCount;
+		}
+	}
+
+	// Horn
 	if (bRowHasHorn)
 	{
-		AddedCard->bHasHornBoost = true;
+		Card->bHasHornBoost = true;
 	}
 	else
 	{
-		AddedCard->bHasHornBoost = false;
+		Card->bHasHornBoost = false;
 	}
 
 	// calculate a card's power based on set parameters
-	AddedCard->CalculatePower();
+	Card->CalculatePower();
 }
 
 void AGW_UnitRow::UpdateAllCardsPowers()

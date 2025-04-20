@@ -259,7 +259,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	{
 	case EGamePhase::Start:
 		{
-			UKismetSystemLibrary::PrintString(this, "GamePhase = Start", true, true, FColor::Green, 30.f, FName("phase"));
+			// UKismetSystemLibrary::PrintString(this, "GamePhase = Start", true, true, FColor::Green, 30.f, FName("phase"));
 			// if it is first round
 			if (RoundIndex == 0)
 			{
@@ -300,7 +300,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 		
 	case EGamePhase::Player1Turn:
 		{
-			UKismetSystemLibrary::PrintString(this, "GamePhase = Player1Turn", true, true, FColor::Green, 30.f, FName("phase"));
+			//UKismetSystemLibrary::PrintString(this, "GamePhase = Player1Turn", true, true, FColor::Green, 30.f, FName("phase"));
 
 			PlayerController->StartTurn();
 			OnAnnouncementMessage.Broadcast("Your turn!");
@@ -309,7 +309,7 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 		
 	case EGamePhase::Wait:
 		{
-			UKismetSystemLibrary::PrintString(this, "GamePhase = Wait", true, true, FColor::Green, 30.f, FName("phase"));
+			//UKismetSystemLibrary::PrintString(this, "GamePhase = Wait", true, true, FColor::Green, 30.f, FName("phase"));
 
 			Player1Data->SetIsPlayerTurn(false);
 			Player2Data->SetIsPlayerTurn(false);
@@ -324,12 +324,12 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 			if (bSpawnAIController)
 			{
 				AIController->StartTurn();
-				UKismetSystemLibrary::PrintString(this, "GamePhase = Player2Turn", true, true, FColor::Green, 30.f, FName("phase"));
+				//UKismetSystemLibrary::PrintString(this, "GamePhase = Player2Turn", true, true, FColor::Green, 30.f, FName("phase"));
 			}
 			else // if there is no AI controller, it will be Player 1's turn again
 			{
-				UKismetSystemLibrary::PrintString(this, "No AI Controller");
-				SetGamePhase(EGamePhase::Player1Turn);
+				//UKismetSystemLibrary::PrintString(this, "No AI Controller");
+				//SetGamePhase(EGamePhase::Player1Turn);
 			}
 			OnAnnouncementMessage.Broadcast("Opponent's turn");
 			break;
@@ -338,14 +338,14 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 
 	case EGamePhase::RoundEnd:
 		{
-			UKismetSystemLibrary::PrintString(this, "GamePhase = RoundEnd", true, true, FColor::Green, 30.f, FName("phase"));
+			//UKismetSystemLibrary::PrintString(this, "GamePhase = RoundEnd", true, true, FColor::Green, 30.f, FName("phase"));
 
 			bool bMatchEnded = false;
 			EMatchResult RoundResult = DetermineResult(bMatchEnded);
 		
-			UKismetSystemLibrary::PrintString(this, 
-		"Round Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
-						   ->GetNameStringByValue(static_cast<int64>(RoundResult)), true, true, FColor::Green, 5.f, FName("result"));
+		// 	UKismetSystemLibrary::PrintString(this, 
+		// "Round Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
+		// 				   ->GetNameStringByValue(static_cast<int64>(RoundResult)), true, true, FColor::Green, 5.f, FName("result"));
 
 			
 			if (bMatchEnded)
@@ -398,11 +398,11 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	
 	case EGamePhase::MatchEnd:
 		{
-			UKismetSystemLibrary::PrintString(this, "GamePhase = MatchEnd", true, true, FColor::Green, 30.f, FName("phase"));
+			//UKismetSystemLibrary::PrintString(this, "GamePhase = MatchEnd", true, true, FColor::Green, 30.f, FName("phase"));
 		
-			UKismetSystemLibrary::PrintString(this, 
-		"Final Match Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
-						   ->GetNameStringByValue(static_cast<int64>(FinalMatchResult)), true, true, FColor::Green, 30.f, FName("result"));
+		// 	UKismetSystemLibrary::PrintString(this, 
+		// "Final Match Result: " + FindObject<UEnum>(ANY_PACKAGE, TEXT("EMatchResult"), true)
+		// 				   ->GetNameStringByValue(static_cast<int64>(FinalMatchResult)), true, true, FColor::Green, 30.f, FName("result"));
 
 			// show Win-Lose Screen
 			OnMatchEnd.Broadcast(FinalMatchResult, RoundScoreData);
@@ -413,12 +413,12 @@ void AGW_GameMode::SetGamePhase(EGamePhase NewPhase)
 	}
 
 	// print score
-	UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::FromInt(Player1Data->GetScore()), true, true, FColor::Cyan, 30.f, FName("p1score"));
-	UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::FromInt(Player2Data->GetScore()), true, true, FColor::Red, 30.f, FName("p2score"));
-	UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::FromInt(Player1Data->GetHandSize()), true, true, FColor::Cyan, 30.f, FName("p1handsize"));
-	UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::FromInt(Player2Data->GetHandSize()), true, true, FColor::Red, 30.f, FName("p2handsize"));
-	UKismetSystemLibrary::PrintString(this, "P1 LIVES: " + FString::FromInt(Player1Data->GetLifeLeft()), true, true, FColor::Cyan, 30.f, FName("p1lives"));
-	UKismetSystemLibrary::PrintString(this, "P2 LIVES: " + FString::FromInt(Player2Data->GetLifeLeft()), true, true, FColor::Red, 30.f, FName("p2lives"));
+	//UKismetSystemLibrary::PrintString(this, "P1 SCORE: " + FString::FromInt(Player1Data->GetScore()), true, true, FColor::Cyan, 30.f, FName("p1score"));
+	//UKismetSystemLibrary::PrintString(this, "P2 SCORE: " + FString::FromInt(Player2Data->GetScore()), true, true, FColor::Red, 30.f, FName("p2score"));
+	//UKismetSystemLibrary::PrintString(this, "P1 HANDSIZE: " + FString::FromInt(Player1Data->GetHandSize()), true, true, FColor::Cyan, 30.f, FName("p1handsize"));
+	//UKismetSystemLibrary::PrintString(this, "P2 HANDSIZE: " + FString::FromInt(Player2Data->GetHandSize()), true, true, FColor::Red, 30.f, FName("p2handsize"));
+	//UKismetSystemLibrary::PrintString(this, "P1 LIVES: " + FString::FromInt(Player1Data->GetLifeLeft()), true, true, FColor::Cyan, 30.f, FName("p1lives"));
+	//UKismetSystemLibrary::PrintString(this, "P2 LIVES: " + FString::FromInt(Player2Data->GetLifeLeft()), true, true, FColor::Red, 30.f, FName("p2lives"));
 }
 
 void AGW_GameMode::StartPlayerTurn()

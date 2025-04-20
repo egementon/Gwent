@@ -70,7 +70,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* BadWeatherAreaMesh;
 
-	void SetCardPowerParameters(AGW_CardBase* AddedCard);
+	void SetCardPowerParameters(AGW_CardBase* Card);
 	
 	UPROPERTY() AGW_CardBase* SnappedSpecialCard;
 	int32 TotalPower;
